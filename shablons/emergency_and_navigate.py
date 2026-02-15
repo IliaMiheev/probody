@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+
+import rospy
+import time
+import signal
+import sys
+from clover import srv
+from std_srvs.srv import Trigger
+from cv_bridge import CvBridge
+from sensor_msgs.msg import Image
+from pyzbar import pyzbar
+import numpy as np
+import math
+import cv2
+
+get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry) #сеовис для получения местонахождения
+navigate = rospy.ServiceProxy('navigate', srv.Navigate) #сервис для полета по указаным координатам
+land = rospy.ServiceProxy('land', Trigger) #сервис для посадки
+
+
+
+
+def navigate_wait(x=0, y=0, z=1, speed=0.5, frame_id='aruco_map', auto_arm=False, tolerance=0.2,sleep=2):
+    """
+    Летит в указанную точку и ждет, пока дрон туда ДОЛЕТИТ.
+    Следующая команда выполнится ТОЛЬКО после прибытия.
+    """
+    navigate(x=x, y=y, z=z, speed=speed, frame_id=frame_id, auto_arm=auto_arm)
+        
+    while not rospy.is_shutdown():
+        telem = get_telemetry(frame_id='navigate_target')
+        if math.sqrt(telem.x**2 + telem.y**2 + telem.z**2) < tolerance:
+            break
+        rospy.sleep(0.2)
+    
+    rospy.sleep(sleep)
+
+
+
+
+
+def emergency_stop():
+
+    """Функция экстренной остановки, срабатывает при нажатии Ctrl + C"""
+ 
+    print("\n" + "="*50)
+    print("EMERGENCY STOP ACTIVATED!")
+    print("="*50)
+    
+    try:
+        print("1. Stopping movement...")
+        try:
+            navigate(x=0, y=0, z=0, frame_id='body', speed=0.5)
+            time.sleep(0.5)
+        except:
+            pass
+        
+        print("2. Hovering for safety...")
+        for i in range(3):
+            print(f"   Hovering... {3-i} seconds")
+            time.sleep(1.0)
+        
+        print("3. Emergency landing...")
+        try:
+            land()
+            time.sleep(2)
+        except:
+            try:
+                telem = get_telemetry(frame_id='aruco_map')
+                navigate(x=telem.x, y=telem.y, z=0.1, frame_id='aruco_map', speed=0.3)
+                time.sleep(5)
+            except:
+                pass
+        
+        print("✓ Emergency stop completed")
+        
+    except Exception as e:
+        print(f"Warning: {e}")
+
+
+
+
+def signal_handler(sig, frame):
+
+    """Перехват Ctrl+C: вместо аварийного завершения программы 
+    выполняет безопасную посадку дрона."""
+
+    print("\nCtrl+C detected - Emergency stop!")
+    emergency_stop()
+    sys.exit(0)
+
+
+signal.signal(signal.SIGINT, signal_handler)
+
+
+def main():
+    navigate_wait(z=1,frame_id='body',auto_arm=True) #должно быть. включает моторы и поднимает дрон на метр вверх
+    #в дальнейшем не передавать переменной auto_arm значение True
+
+    
+    # тут будут navigate_wait и подписчики
+    # navigate_wait(x=3,z=1,sleep=1)
+    # navigate_wait(y=5,x=2,z=1,sleep = 4)
+ 
+
+    land() #посадка
+
+if __name__ == "__main__":
+    main()

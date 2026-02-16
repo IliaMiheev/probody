@@ -19,40 +19,39 @@ onMounted(()=>{
 })
 
 function setNumber(item) {
-  let valueOfMarker = numbers.value[item.index].variable
-  // Если строка пустая, то ставим счётчик
+  let valueOfMarker = item.variable;
   if (valueOfMarker === '') {
-    numbers.value[item.index].variable = clickCount.value;
+    // Добавляем выбранную клетку
+    item.variable = clickCount.value;
+    listOfTrips.value.push(item);
     clickCount.value++;
-  }
-  // Если нажали на последнее число, то удаляем его
-  else if (valueOfMarker === clickCount.value - 1) {
-    numbers.value[item.index].variable = '';
+  } else if (valueOfMarker === clickCount.value - 1) {
+    // Удаляем последнюю выбранную клетку
+    item.variable = '';
+    // Удаляем из списка по совпадению
+    const index = listOfTrips.value.indexOf(item);
+    if (index !== -1) {
+      listOfTrips.value.splice(index, 1);
+    }
     clickCount.value--;
-  }
-  // Если нажали на уже заполненную клетку, то выводим сообщение
-  else {
+  } else {
     izitoast.info({
       title: 'Информация',
       message: "Удалять можно только последний пункт маршрута"
-    })
+    });
   }
 }
 
 function saveResult() {
-  let finallyText = ''
-  const timeArr = numbers.value.reduce((acc, curr) => [curr, ...acc], [])
-  timeArr.map((item)=>{
-    if (item.variable) {
-      listOfTrips.value.push(item)
-      finallyText += `navigate_wait(${item.x}, ${item.y})\n`
-    }
-  })
-  console.log(finallyText)
+  let finallyText = '';
+  for (const item of listOfTrips.value) {
+    finallyText += `navigate_wait(${item.x}, ${item.y})\n`;
+  }
+  console.log(finallyText);
   izitoast.info({
     title: 'Информация',
     message: "Посмотри в консоли путь дрона. Ctrl + Shift + I или F12"
-  })
+  });
 }
 </script>
 

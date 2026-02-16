@@ -1,55 +1,59 @@
-color=''
+class ColorDetect():
+    def __init__(self):
+        self.color = None
 
-def detect_color_callback(data, print_type='str'):
-    '''определение цвета'''
+    def getColor(self):
+        return self.color
 
-    global color 
-    frame = bridge.imgmsg_to_cv2(data, 'bgr8')
-    height, width = frame.shape[:2]
-    y_start = int(height * 0.33)
-    y_end = int(height * 0.67)
-    x_start = int(width * 0.31)
-    x_end = int(width * 0.69)
+    def detect_color_callback(self, data, print_type='str'):
+        '''определение цвета'''
 
-    cropped_frame = frame[y_start:y_end, x_start:x_end]
-    
-    if cropped_frame.size == 0:
-        return
-    
+        frame = bridge.imgmsg_to_cv2(data, 'bgr8')
+        height, width = frame.shape[:2]
+        y_start = int(height * 0.33)
+        y_end = int(height * 0.67)
+        x_start = int(width * 0.31)
+        x_end = int(width * 0.69)
 
-    if print_type == 'rgb':
-
-        mean_bgr = cv2.mean(cropped_frame)[:3]
-        mean_rgb = (int(mean_bgr[2]), int(mean_bgr[1]), int(mean_bgr[0]))  
-        color = str(mean_rgb)
-    
-
-    elif print_type == 'str':
-
-        # Получаем средние значения BGR
-        mean_bgr = cv2.mean(cropped_frame)[:3]
-        b, g, r = int(mean_bgr[0]), int(mean_bgr[1]), int(mean_bgr[2])
+        cropped_frame = frame[y_start:y_end, x_start:x_end]
         
+        if cropped_frame.size == 0:
+            return
         
-        if b > g and b > r and b > 100:  
-            color = 'blue'
-        elif g > b and g > r and g > 100:  
-            color = 'green'
-        elif r > b and r > g and r > 100:  
-            color = 'red'
-        else:
-            color = 'unknown'
-    return(color)
+
+        if print_type == 'rgb':
+
+            mean_bgr = cv2.mean(cropped_frame)[:3]
+            mean_rgb = (int(mean_bgr[2]), int(mean_bgr[1]), int(mean_bgr[0]))  
+            self.color = str(mean_rgb)
         
+
+        elif print_type == 'str':
+
+            # Получаем средние значения BGR
+            mean_bgr = cv2.mean(cropped_frame)[:3]
+            b, g, r = int(mean_bgr[0]), int(mean_bgr[1]), int(mean_bgr[2])
+            
+            
+            if b > g and b > r and b > 100:  
+                self.color = 'blue'
+            elif g > b and g > r and g > 100:  
+                self.color = 'green'
+            elif r > b and r > g and r > 100:  
+                self.color = 'red'
+            else:
+                self.color = None
+
 
 
 
 
 #в MAIN для вызова функции должно быть:
-
+# cd = ColorDetect()
     #color_sub = rospy.Subscriber('main_camera/image_raw', Image, 
-                              #lambda img: detect_color_callback(img, print_type='rgb'), 
+                              #lambda img: cd.detect_color_callback(img, print_type='rgb'), 
                               #queue_size=1)
+    # print(cd.getColor())
     #rospy.sleep(2)
     #color_sub.unregister()
 

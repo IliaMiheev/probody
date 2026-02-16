@@ -11,10 +11,10 @@ onMounted(()=>{
   for (let i = 0; i < 100; i++) {
     numbers.value.push({
       variable: '',
-      x: (i + 1) % 10 === 0 ? 10: (i + 1) % 10,
-      y: 10 - Math.floor(i / 10),
+      x: i % 10,
+      y: 9 - Math.floor(i / 10),
       index: i
-    })
+    });
   }
 })
 
@@ -49,7 +49,6 @@ function saveResult() {
     }
   })
   console.log(finallyText)
-  // console.log(listOfTrips)
   izitoast.info({
     title: 'Информация',
     message: "Посмотри в консоли путь дрона. Ctrl + Shift + I или F12"

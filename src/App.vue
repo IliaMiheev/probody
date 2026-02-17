@@ -8,9 +8,10 @@ const clickCount = ref(1); // Счетчик нажатий
 const listOfTrips = ref([])
 
 onMounted(()=>{
+  
   for (let i = 0; i < 100; i++) {
     numbers.value.push({
-      variable: '',
+      variable: [],
       x: i % 10,
       y: 9 - Math.floor(i / 10),
       index: i
@@ -19,26 +20,31 @@ onMounted(()=>{
 })
 
 function setNumber(item) {
-  let valueOfMarker = item.variable;
+  let valueOfMarker = item.variable[0];
+  //если в клетке нет числа, то оно поставится
   if (valueOfMarker === '') {
-    // Добавляем выбранную клетку
-    item.variable = clickCount.value;
+    item.variable.push(String(clickCount.value));
     listOfTrips.value.push(item);
     clickCount.value++;
   } else if (valueOfMarker === clickCount.value - 1) {
-    // Удаляем последнюю выбранную клетку
-    item.variable = '';
-    // Удаляем из списка по совпадению
+    //если мы нажимаем на последнюю выбранную клетку, то у неё удаляется число
+    item.variable.splice(0, 1) ;
     const index = listOfTrips.value.indexOf(item);
     if (index !== -1) {
       listOfTrips.value.splice(index, 1);
     }
     clickCount.value--;
   } else {
-    izitoast.info({
-      title: 'Информация',
-      message: "Удалять можно только последний пункт маршрута"
-    });
+    //если нажимаем на ранее отмеченную клетку (не последнюю), то вывбодится ошибка
+    listOfTrips.value.push(item)
+    if (numbers.value[item.index].variable.at(-1) === clickCount.value-1) {
+      izitoast.error({title:'Ошибка', message:'Нельзя выбирать один и тот же aruco маркер 2 раза подряд'})
+      return 
+    }
+    // numbers.value[item.index].variable = `${item.variable}, ${clickCount.value}`
+    numbers.value[item.index].variable.push(clickCount.value) 
+    clickCount.value++;
+
   }
 }
 
@@ -53,6 +59,20 @@ function saveResult() {
     message: "Посмотри в консоли путь дрона. Ctrl + Shift + I или F12"
   });
 }
+
+function cleanResult() {
+  clickCount.value = 1
+  numbers.value = []
+  listOfTrips.value = []
+  for (let i = 0; i < 100; i++) {
+    numbers.value.push({
+      variable: [],
+      x: i % 10,
+      y: 9 - Math.floor(i / 10),
+      index: i
+    });
+  }
+}
 </script>
 
 <template>
@@ -64,12 +84,15 @@ function saveResult() {
         :key="index"
         @click="setNumber(item)"
     >
-      {{ item.variable }}
+    {{ numbers[index].variable.join(', ') }}
     </div>
   </div>
   <button
     @click="saveResult"
   >Сохранить</button>
+    <button
+    @click="cleanResult"
+  >Очистить</button>
 </template>
 
 <style>

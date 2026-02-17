@@ -54,6 +54,18 @@ function saveResult() {
     message: "Посмотри в консоли путь дрона. Ctrl + Shift + I или F12"
   });
 }
+
+function cleanResult() {
+  numbers.value = []
+  for (let i = 0; i < 100; i++) {
+    numbers.value.push({
+      variable: '',
+      x: i % 10,
+      y: 9 - Math.floor(i / 10),
+      index: i
+    });
+  }
+}
 </script>
 
 <template>
@@ -71,6 +83,9 @@ function saveResult() {
   <button
     @click="saveResult"
   >Сохранить</button>
+    <button
+    @click="cleanResult"
+  >Очистить</button>
 </template>
 
 <style>

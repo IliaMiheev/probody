@@ -8,6 +8,7 @@ const clickCount = ref(1); // Счетчик нажатий
 const listOfTrips = ref([])
 
 onMounted(()=>{
+  
   for (let i = 0; i < 100; i++) {
     numbers.value.push({
       variable: '',

@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted  } from 'vue';
 import izitoast from "./izitoast";
+import { useEventListener } from '@vueuse/core';
 
-// const numbers = ref(Array(100).fill('')); // Инициализируем массив с пустыми строками
 const numbers = ref([]); // Инициализируем массив с пустыми строками
 const clickCount = ref(1); // Счетчик нажатий
 const listOfTrips = ref([])
@@ -35,14 +35,13 @@ function setNumber(item) {
     }
     clickCount.value--;
   } else {
-    //если нажимаем на ранее отмеченную клетку (не последнюю), то вывбодится ошибка
+    //если нажимаем на ранее отмеченную клетку (не последнюю), то выводится ошибка
     listOfTrips.value.push(item)
     if (numbers.value[item.index].variable.at(-1) === clickCount.value-1) {
       izitoast.error({title:'Ошибка', message:'Нельзя выбирать один и тот же aruco маркер 2 раза подряд'})
       return 
     }
-    // numbers.value[item.index].variable = `${item.variable}, ${clickCount.value}`
-    numbers.value[item.index].variable.push(clickCount.value) 
+    numbers.value[item.index].variable.push(clickCount.value)
     clickCount.value++;
 
   }
@@ -73,6 +72,16 @@ function cleanResult() {
     });
   }
 }
+// Обрабатываем нажатие Ctrl + Z
+const handleKeydown = (event) => {
+  if (event.ctrlKey && event.code === 'KeyZ' && listOfTrips.value.length ) {
+    event.preventDefault();
+    numbers.value[listOfTrips.value.at(-1).index].variable.pop();
+    listOfTrips.value.pop();
+    clickCount.value--;
+  }
+};
+useEventListener('keydown', handleKeydown);
 </script>
 
 <template>

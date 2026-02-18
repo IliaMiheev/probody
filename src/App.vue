@@ -1,11 +1,16 @@
 <script setup>
-import { ref, onMounted  } from 'vue';
+import { ref, onMounted } from 'vue';
 import izitoast from "./izitoast";
 import { useEventListener } from '@vueuse/core';
+import MyDialog from './components/MyDialog.vue';
+import copyToclipboard from './copyToclipboard';
+
 
 const numbers = ref([]); // Инициализируем массив с пустыми строками
 const clickCount = ref(1); // Счетчик нажатий
 const listOfTrips = ref([])
+const isModalVisible = ref(false)
+let finallyText = '';
 
 onMounted(()=>{
   
@@ -48,7 +53,6 @@ function setNumber(item) {
 }
 
 function saveResult() {
-  let finallyText = '';
   for (const item of listOfTrips.value) {
     finallyText += `navigate_wait(${item.x}, ${item.y})\n`;
   }
@@ -57,6 +61,7 @@ function saveResult() {
     title: 'Информация',
     message: "Посмотри в консоли путь дрона. Ctrl + Shift + I или F12"
   });
+  isModalVisible.value = true
 }
 
 function cleanResult() {
@@ -107,6 +112,27 @@ useEventListener('keydown', handleKeydown);
     <button
     @click="cleanResult"
   >Очистить</button>
+
+  <MyDialog v-show="isModalVisible" @close="isModalVisible = false">
+    <template #header>
+      <strong v-if="listOfTrips.length">Код готов!</strong>
+      <strong v-else>Код не готов!</strong>
+    </template>
+    <template #body>
+      <p v-if="listOfTrips.length">Это тело модального окна.
+            {{ finallyText }}
+
+      </p>
+      <p v-else>Выстройте маршрут перед сохранением кода.
+      </p>
+    </template>
+    <template #footer>
+      <button type="button"  class="btn-green" @click="isModalVisible = false">Скачать код</button>
+      <button type="button"  class="btn-green" @click="copyToclipboard(finallyText)">Скопировать код</button>
+      <button type="button"  class="btn-green" @click="isModalVisible = false">ОК</button>
+    </template>
+  </MyDialog>
+
 </template>
 
 <style>

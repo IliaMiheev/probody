@@ -78,7 +78,12 @@ const handleKeydown = (event) => {
     event.preventDefault();
     numbers.value[listOfTrips.value.at(-1).index].variable.pop();
     listOfTrips.value.pop();
-    clickCount.value--;
+    
+    if (clickCount.value === 1) {
+      return
+    } else{
+      clickCount.value--;
+    }
   }
 };
 useEventListener('keydown', handleKeydown);
@@ -105,22 +110,30 @@ useEventListener('keydown', handleKeydown);
 </template>
 
 <style>
+:root{
+  --side: 70px;
+}
 .grid {
   display: grid;
-  grid-template-columns: repeat(10, 50px);
+  grid-template-columns: repeat(10, var(--side));
   gap: 10px;
+  user-select: none;
 }
 
 .square {
-  width: 50px;  /* Ширина квадрата */
-  height: 50px; /* Высота квадрата */
+  width: var(--side);  /* Ширина квадрата */
+  height: var(--side); /* Высота квадрата */
   background-color: #e0e0e0;
   cursor: pointer;
   transition: background-color 0.3s;
+  overflow-y: scroll;
 }
 
 .square:hover {
   background-color: #d0d0d0;
+}
+.square::-webkit-scrollbar {
+  display: none;
 }
 .square[data-key='90'] {
   background-color: red;

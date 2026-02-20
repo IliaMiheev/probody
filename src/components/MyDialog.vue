@@ -94,6 +94,12 @@ function closeModal() {
   padding: 5px;
   margin: 0 5px;
 }
+.btn-green:hover {
+  background-color: #0fa386;
+}
+.btn-green:active {
+  background-color: #65ebd2;
+}
 
 .modal-fade-enter,
 .modal-fade-leave-active {

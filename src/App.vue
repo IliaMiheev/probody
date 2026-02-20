@@ -13,7 +13,6 @@ const isModalVisible = ref(false)
 let finallyText = '';
 
 onMounted(()=>{
-  
   for (let i = 0; i < 100; i++) {
     numbers.value.push({
       variable: [],
@@ -43,7 +42,10 @@ function setNumber(item) {
     //если нажимаем на ранее отмеченную клетку (не последнюю), то выводится ошибка
     listOfTrips.value.push(item)
     if (numbers.value[item.index].variable.at(-1) === clickCount.value-1) {
-      izitoast.error({title:'Ошибка', message:'Нельзя выбирать один и тот же aruco маркер 2 раза подряд'})
+      izitoast.error({
+        title:'Ошибка', 
+        message:'Нельзя выбирать один и тот же aruco маркер 2 раза подряд'
+      })
       return 
     }
     numbers.value[item.index].variable.push(clickCount.value)
@@ -53,14 +55,15 @@ function setNumber(item) {
 }
 
 function saveResult() {
+  let navigate_waites = ''
   for (const item of listOfTrips.value) {
-    finallyText += `navigate_wait(${item.x}, ${item.y})\n`;
+    navigate_waites += `navigate_wait(${item.x}, ${item.y})\n\t`;
   }
-  console.log(finallyText);
-  izitoast.info({
-    title: 'Информация',
-    message: "Посмотри в консоли путь дрона. Ctrl + Shift + I или F12"
-  });
+  fetch('/shablons/emergency_and_navigate.txt')
+    .then(response => response.text())
+    .then(textOfCode => {
+      finallyText = textOfCode.replace('<<navigate_wait>>', navigate_waites);
+    });
   isModalVisible.value = true
 }
 
@@ -92,6 +95,14 @@ const handleKeydown = (event) => {
   }
 };
 useEventListener('keydown', handleKeydown);
+
+function copyAndToast(text){
+  copyToclipboard(text)
+  izitoast.success({
+        title:'Успешно', 
+        message:'Код скопирован в буфер обмена'
+      })
+}
 </script>
 
 <template>
@@ -119,16 +130,13 @@ useEventListener('keydown', handleKeydown);
       <strong v-else>Код не готов!</strong>
     </template>
     <template #body>
-      <p v-if="listOfTrips.length">Это тело модального окна.
-            {{ finallyText }}
-
-      </p>
+      <p v-if="listOfTrips.length">Скопируйте или скачайте ваш код</p>
       <p v-else>Выстройте маршрут перед сохранением кода.
       </p>
     </template>
     <template #footer>
       <button type="button"  class="btn-green" @click="isModalVisible = false">Скачать код</button>
-      <button type="button"  class="btn-green" @click="copyToclipboard(finallyText)">Скопировать код</button>
+      <button type="button"  class="btn-green" @click="copyAndToast(finallyText)">Скопировать код</button>
       <button type="button"  class="btn-green" @click="isModalVisible = false">ОК</button>
     </template>
   </MyDialog>

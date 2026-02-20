@@ -18,8 +18,6 @@ navigate = rospy.ServiceProxy('navigate', srv.Navigate) #сервис для п�
 land = rospy.ServiceProxy('land', Trigger) #сервис для посадки
 
 
-
-
 def navigate_wait(x=0, y=0, z=1, speed=0.5, frame_id='aruco_map', auto_arm=False, tolerance=0.2,sleep=2):
     """
     Летит в указанную точку и ждет, пока дрон туда ДОЛЕТИТ.
@@ -34,9 +32,6 @@ def navigate_wait(x=0, y=0, z=1, speed=0.5, frame_id='aruco_map', auto_arm=False
         rospy.sleep(0.2)
     
     rospy.sleep(sleep)
-
-
-
 
 
 def emergency_stop():
@@ -78,8 +73,6 @@ def emergency_stop():
         print(f"Warning: {e}")
 
 
-
-
 def signal_handler(sig, frame):
 
     """Перехват Ctrl+C: вместо аварийного завершения программы 
@@ -98,9 +91,7 @@ def main():
     #в дальнейшем не передавать переменной auto_arm значение True
 
     
-    # тут будут navigate_wait и подписчики
-    # navigate_wait(x=3,z=1,sleep=1)
-    # navigate_wait(y=5,x=2,z=1,sleep = 4)
+    <<navigate_wait>>
  
 
     land() #посадка

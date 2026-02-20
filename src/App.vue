@@ -135,8 +135,10 @@ function copyAndToast(text){
       </p>
     </template>
     <template #footer>
-      <button type="button"  class="btn-green" @click="isModalVisible = false">Скачать код</button>
-      <button type="button"  class="btn-green" @click="copyAndToast(finallyText)">Скопировать код</button>
+      <div v-if="listOfTrips.length">
+        <button type="button"  class="btn-green" @click="isModalVisible = false">Скачать код</button>
+        <button type="button"  class="btn-green" @click="copyAndToast(finallyText)">Скопировать код</button>
+      </div>
       <button type="button"  class="btn-green" @click="isModalVisible = false">ОК</button>
     </template>
   </MyDialog>

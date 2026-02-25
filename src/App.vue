@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import izitoast from "./izitoast";
 import { useEventListener } from "@vueuse/core";
 import MyDialog from "./components/MyDialog.vue";
+import MyDropMenu from "./components/MyDropMenu.vue";
 import copyToclipboard from "./copyToclipboard";
 
 const numbers = ref([]); // Инициализируем массив с пустыми строками
@@ -104,75 +105,75 @@ function copyAndToast(text) {
 </script>
 
 <template>
-  <div class="grid">
-    <div
-      class="square"
-      v-for="(item, index) in numbers"
-      :data-key="index"
-      :key="index"
-      @click="setNumber(item)"
-    >
-    
-    <div id="idenx">{{ numbers[index].variable.join(", ") }}</div>
+  <div class="wraper">
+    <div class="grid">
+      <div
+        class="square"
+        v-for="(item, index) in numbers"
+        :data-key="index"
+        :key="index"
+        @click="setNumber(item)"
+      >
+      {{ numbers[index].variable.join(", ") }}
+      </div>
     </div>
+
+    <div class="actions">
+      <button @click="saveResult">Сохранить</button>
+      <button @click="cleanResult">Очистить</button>
+      <button @click="cleanResult">Отменить</button>
+    </div>
+    <!-- <MyDropMenu/> -->
   </div>
 
-  <div class="SaveCleanBtn">
-    <button id="saveBtn" @click="saveResult">Сохранить</button>
-    <button id="cleanBtn" @click="cleanResult">Очистить</button>
-  </div>
 
   <MyDialog
     v-show="isModalVisible"
     @close="isModalVisible = false"
     class="dialogWindow"
+    :is-success=listOfTrips.length
   >
     <template #header>
-      <strong id='codeIsReady' v-if="listOfTrips.length">Код готов!</strong>
-      <strong id='codeNotReady' v-else>Код не готов!</strong>
+      <strong v-if="listOfTrips.length">Код готов!</strong>
+      <strong v-else>Код не готов!</strong>
     </template>
     <template #body>
-      <p v-if="listOfTrips.length" id="headText1">
+      <p v-if="listOfTrips.length">
         Скопируйте или скачайте ваш код
       </p>
-      <p v-else id='ReccomendText'>Выстройте маршрут перед сохранением кода.</p>
+      <p v-else>Выстройте маршрут перед сохранением кода.</p>
     </template>
     <template #footer>
       <div v-if="listOfTrips.length">
-        <button type="button" class="btn-green" @click="isModalVisible = false">
+        <button type="button" @click="isModalVisible = false">
           Скачать код
         </button>
         <button
           type="button"
-          class="btn-green"
           @click="copyAndToast(finallyText)"
         >
           Скопировать код
         </button>
       </div>
-      <button type="button" class="btn-green" @click="isModalVisible = false">
+      <button type="button"@click="isModalVisible = false">
         ОК
       </button>
     </template>
   </MyDialog>
-
-  <div class="helptext">
-    <p>Для формирования маршрута</p>
-    <p>дрона нажимайте на маркеры,</p>
-    <p>по которым он полетит</p>
-    <p>Для отмены действия</p>
-    <p>нажмите Ctrl + Z</p>
-  </div>
 </template>
 
 <style>
 html {
   background-image: radial-gradient(#383838e2, #222222);
-  border: 3px solid rgb(251, 251, 251);
+  color: white;
 }
 
 :root {
   --side: 70px;
+}
+
+.wraper {
+  display: flex;
 }
 
 .grid {
@@ -183,14 +184,6 @@ html {
   user-select: none;
 }
 
-.helptext {
-  position: absolute;
-  top: 15px;
-  left: 20px;
-  font-size: 25px;
-  color: rgb(251, 251, 251);
-}
-
 .square {
   width: var(--side); /* Ширина квадрата */
   height: var(--side); /* Высота квадрата */
@@ -198,7 +191,6 @@ html {
   background-size: cover;
   border: 3px solid rgb(251, 251, 251);
   background-color: #e0e0e0;
-  margin-left: 340px;
   cursor: pointer;
   transition: background-color 0.3s;
   overflow-y: scroll;
@@ -206,6 +198,13 @@ html {
   background-blend-mode: multiply;
   background-color: transparent;
   transition: background-color 0.3s ease;
+
+  color:white;
+  text-shadow: 
+    -1px -1px 0 black,
+    1px -1px 0 black,
+    -1px 1px 0 black,
+    1px 1px 0 black;
 }
 
 .square:hover {
@@ -221,7 +220,12 @@ html {
   background-color: rgba(0, 2, 0, 0.638);
 }
 
-.SaveCleanBtn button {
+.actions {
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.actions button {
   border: 2px solid rgb(251, 251, 251);
   padding: 15px 30px;
   font-size: 15px;
@@ -230,15 +234,6 @@ html {
   cursor: pointer;
   margin: 5px;
   transition: 0.3s;
-  position: absolute;
-}
-#saveBtn {
-  top: 320px;
-  left: 15px;
-}
-#cleanBtn {
-  top: 320px;
-  left: 180px;
 }
 
 .modal {
@@ -246,50 +241,11 @@ html {
 }
 
 .modal-body{
-  color: beige;
   size: 20px;
-  font-size: 20px;
-}
-
-#headText1 {
-  color: white;
   font-size: 20px;
 }
 
 .btn-green :hover {
   background-color: rgb(229, 67, 67);
-}
-
-.modal-footer [type = 'button'] {
-  background-color: rgba(255, 255, 255, 0.777);
-  color: rgb(3, 3, 3);
-  border: 0;
-}
-
-.modal-header [type = 'button'] {
-  color: red;
-  font-size: 25px;
-}
-
-#codeIsReady {
-  color: white;
-}
-
-#codeNotReady{
-  color:rgb(248, 8, 8); 
-  size: 20px;
-}
-
-#ReccomendText{
-  color: white;
-}
-
-#idenx{
-  color:white;
-  text-shadow: 
-    -1px -1px 0 black,
-    1px -1px 0 black,
-    -1px 1px 0 black,
-    1px 1px 0 black;
 }
 </style>

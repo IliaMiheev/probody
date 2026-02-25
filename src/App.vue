@@ -123,7 +123,7 @@ function copyAndToast(text) {
       <button @click="cleanResult">Очистить</button>
       <button @click="cleanResult">Отменить</button>
     </div>
-    <!-- <MyDropMenu/> -->
+    <MyDropMenu/>
   </div>
 
 

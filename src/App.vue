@@ -99,9 +99,34 @@ useEventListener('keydown', handleKeydown);
 function copyAndToast(text){
   copyToclipboard(text)
   izitoast.success({
-        title:'Успешно', 
-        message:'Код скопирован в буфер обмена'
-      })
+    title:'Успешно',
+    message:'Код скопирован в буфер обмена'
+  })
+  isModalVisible.value = false
+}
+
+function handleDownloadBtn(){
+  console.log(finallyText)
+  // Создание файла
+  const downloadUrl = ref('');
+  const blob = new Blob([finallyText], { type: 'text/plain' });
+  downloadUrl.value = URL.createObjectURL(blob);
+  // Задержка для избежания ошибок в некоторых браузерах
+  setTimeout(() => {
+    // Загрузка
+    const link = document.createElement('a');
+    link.href = downloadUrl.value;
+    link.download = 'itinerary.py';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, 0);
+
+  izitoast.success({
+    title:'Успешно',
+    message:'Загрузка файла уже началась'
+  })
+  isModalVisible.value = false
 }
 </script>
 
@@ -135,7 +160,7 @@ function copyAndToast(text){
       </p>
     </template>
     <template #footer>
-      <button type="button"  class="btn-green" @click="isModalVisible = false">Скачать код</button>
+      <button type="button"  class="btn-green" @click="handleDownloadBtn">Скачать код</button>
       <button type="button"  class="btn-green" @click="copyAndToast(finallyText)">Скопировать код</button>
       <button type="button"  class="btn-green" @click="isModalVisible = false">ОК</button>
     </template>

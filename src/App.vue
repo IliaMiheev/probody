@@ -112,7 +112,8 @@ function copyAndToast(text) {
       :key="index"
       @click="setNumber(item)"
     >
-      {{ numbers[index].variable.join(", ") }}
+    
+    <div id="idenx">{{ numbers[index].variable.join(", ") }}</div>
     </div>
   </div>
 
@@ -134,7 +135,7 @@ function copyAndToast(text) {
       <p v-if="listOfTrips.length" id="headText1">
         Скопируйте или скачайте ваш код
       </p>
-      <p v-else>Выстройте маршрут перед сохранением кода.</p>
+      <p v-else id='ReccomendText'>Выстройте маршрут перед сохранением кода.</p>
     </template>
     <template #footer>
       <div v-if="listOfTrips.length">
@@ -275,8 +276,20 @@ html {
 }
 
 #codeNotReady{
-  color:rgb(248, 8, 8);
+  color:rgb(248, 8, 8); 
   size: 20px;
 }
 
+#ReccomendText{
+  color: white;
+}
+
+#idenx{
+  color:white;
+  text-shadow: 
+    -1px -1px 0 black,
+    1px -1px 0 black,
+    -1px 1px 0 black,
+    1px 1px 0 black;
+}
 </style>

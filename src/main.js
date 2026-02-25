@@ -8,10 +8,13 @@ if (started) {
 }
 
 const createWindow = () => {
+  const { screen } = require('electron');
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width, height } = primaryDisplay.workAreaSize;
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: width,
+    height: height,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },

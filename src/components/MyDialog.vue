@@ -50,7 +50,7 @@ function closeModal() {
 }
 
 .modal {
-  background: #FFFFFF;
+  background: #2f2f2f;
   box-shadow: 2px 2px 20px 1px;
   overflow-x: auto;
   display: flex;
@@ -114,15 +114,5 @@ function closeModal() {
   font-weight: bold;
   color: red;
   background: transparent;
-}
-
-.modal-fade-enter,
-.modal-fade-leave-active {
-  opacity: 0;
-}
-
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.5s ease;
 }
 </style>   

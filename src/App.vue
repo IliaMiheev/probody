@@ -174,6 +174,7 @@ html {
 
 .wraper {
   display: flex;
+  justify-content: center;
 }
 
 .grid {
@@ -234,18 +235,5 @@ html {
   cursor: pointer;
   margin: 5px;
   transition: 0.3s;
-}
-
-.modal {
-  background-color: #2f2f2f;
-}
-
-.modal-body{
-  size: 20px;
-  font-size: 20px;
-}
-
-.btn-green :hover {
-  background-color: rgb(229, 67, 67);
 }
 </style>

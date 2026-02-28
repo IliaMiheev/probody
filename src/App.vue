@@ -57,7 +57,7 @@ function setNumber(item) {
 function saveResult() {
   let navigate_waites = ''
   for (const item of listOfTrips.value) {
-    navigate_waites += `navigate_wait(${item.x}, ${item.y})\n\t`;
+    navigate_waites += `\tnavigate_wait(${item.x}, ${item.y})\n`;
   }
   fetch('/shablons/emergency_and_navigate.txt')
     .then(response => response.text())

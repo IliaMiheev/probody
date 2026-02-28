@@ -91,7 +91,7 @@ def main():
     #в дальнейшем не передавать переменной auto_arm значение True
 
     
-    <<navigate_wait>>
+<<navigate_wait>>
  
 
     land() #посадка

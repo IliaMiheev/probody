@@ -2,20 +2,20 @@
   <transition name="modal-fade">
     <div class="modal-backdrop" @click="closeModal">
       <div class="modal" @click.stop>
-        <header class="modal-header">
+        <header :class="['modal-header', isSuccess ? 'modal-header-success': 'modal-header-error']">
           <slot name="header">
             <strong>Заголовок по умолчанию</strong>
           </slot>
-          <button type="button" class="btn-close" @click="closeModal" aria-label="Закрыть модальное окно">
+          <button class="modal-btn-close" @click="closeModal" aria-label="Закрыть модальное окно">
             ×
           </button>
         </header>
         <section class="modal-body">
           <slot name="body">Тело по умолчанию</slot>
         </section>
-        <footer class="modal-footer">
+        <footer :class="['modal-footer', isSuccess ? 'modal-footer-success': 'modal-footer-error']">
           <slot name="footer">
-            <button type="button" class="btn-green" @click="closeModal">Закрыть</button>
+            <button  @click="closeModal">Закрыть</button>
           </slot>
         </footer>
       </div>
@@ -25,6 +25,12 @@
 
 <script setup>
 const emit = defineEmits(['close'])
+const props = defineProps({
+  isSuccess: {
+    type: Boolean,
+    required: true
+  }
+})
 function closeModal() {
     emit('close');
 }
@@ -44,7 +50,7 @@ function closeModal() {
 }
 
 .modal {
-  background: #FFFFFF;
+  background: #2f2f2f;
   box-shadow: 2px 2px 20px 1px;
   overflow-x: auto;
   display: flex;
@@ -62,52 +68,52 @@ function closeModal() {
 
 .modal-header {
   border-bottom: 1px solid #eeeeee;
-  color: #4AAE9B;
   justify-content: space-between;
+}
+.modal-header-success {
+  color: #4AAE9B;
+}
+.modal-header-error {
+  color: red;
+}
+
+.modal-header [type = 'button'] {
+  color: red;
+  font-size: 25px;
 }
 
 .modal-footer {
-  border-top: 1px solid #eeeeee;
   justify-content: flex-end;
+  border-top: 1px solid white;
+}
+.modal-footer [type = 'button'] {
+  justify-content: flex-end;
+  border-top: 1px solid white;
+  padding: 5px;
+}
+.modal-footer-success [type = 'button'] {
+  background-color: #4AAE9B;
+  border: none;
+  margin: 3px;
+}
+.modal-footer-error [type = 'button'] {
+  background: red;
+  border: none;
 }
 
 .modal-body {
   position: relative;
   padding: 20px 10px;
+  color: white
 }
 
-.btn-close {
+.modal-btn-close {
   border: none;
   font-size: 20px;
   padding: 0;
   cursor: pointer;
   font-weight: bold;
-  color: #4AAE9B;
+  color: red;
   background: transparent;
-}
-
-.btn-green {
-  color: white;
-  background: #4AAE9B;
-  border: 1px solid #4AAE9B;
-  border-radius: 2px;
-  padding: 5px;
-  margin: 0 5px;
-}
-.btn-green:hover {
-  background-color: #0fa386;
-}
-.btn-green:active {
-  background-color: #65ebd2;
-}
-
-.modal-fade-enter,
-.modal-fade-leave-active {
-  opacity: 0;
-}
-
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.5s ease;
 }
 </style>   

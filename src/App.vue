@@ -30,14 +30,6 @@ function setNumber(item) {
     item.variable.push(String(clickCount.value));
     listOfTrips.value.push(item);
     clickCount.value++;
-  } else if (valueOfMarker === clickCount.value - 1) {
-    //если мы нажимаем на последнюю выбранную клетку, то у неё удаляется число
-    item.variable.splice(0, 1);
-    const index = listOfTrips.value.indexOf(item);
-    if (index !== -1) {
-      listOfTrips.value.splice(index, 1);
-    }
-    clickCount.value--;
   } else {
     //если нажимаем на ранее отмеченную клетку (не последнюю), то выводится ошибка
     listOfTrips.value.push(item);
@@ -66,6 +58,17 @@ function saveResult() {
   isModalVisible.value = true;
 }
 
+function cancel(){
+  numbers.value[listOfTrips.value.at(-1).index].variable.pop();
+    listOfTrips.value.pop();
+
+    if (clickCount.value === 1) {
+      return;
+    } else {
+      clickCount.value--;
+    }
+}
+
 function cleanResult() {
   clickCount.value = 1;
   numbers.value = [];
@@ -83,14 +86,7 @@ function cleanResult() {
 const handleKeydown = (event) => {
   if (event.ctrlKey && event.code === "KeyZ" && listOfTrips.value.length) {
     event.preventDefault();
-    numbers.value[listOfTrips.value.at(-1).index].variable.pop();
-    listOfTrips.value.pop();
-
-    if (clickCount.value === 1) {
-      return;
-    } else {
-      clickCount.value--;
-    }
+    cancel();
   }
 };
 useEventListener("keydown", handleKeydown);
@@ -121,7 +117,7 @@ function copyAndToast(text) {
     <div class="actions">
       <button @click="saveResult">Сохранить</button>
       <button @click="cleanResult">Очистить</button>
-      <button @click="cleanResult">Отменить</button>
+      <button @click="cancel">Отменить</button>
     </div>
     <MyDropMenu/>
   </div>
@@ -165,7 +161,6 @@ function copyAndToast(text) {
 <style>
 html {
   background-image: radial-gradient(#383838e2, #222222);
-  color: white;
 }
 
 :root {

@@ -6,7 +6,7 @@
           <slot name="header">
             <strong>Заголовок по умолчанию</strong>
           </slot>
-          <button class="btn-close" @click="closeModal" aria-label="Закрыть модальное окно">
+          <button class="modal-btn-close" @click="closeModal" aria-label="Закрыть модальное окно">
             ×
           </button>
         </header>
@@ -104,9 +104,10 @@ function closeModal() {
 .modal-body {
   position: relative;
   padding: 20px 10px;
+  color: white
 }
 
-.btn-close {
+.modal-btn-close {
   border: none;
   font-size: 20px;
   padding: 0;

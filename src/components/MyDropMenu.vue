@@ -21,7 +21,7 @@
     <transition name="slide">
       <aside v-if="isOpen" class="side-panel">
         <div class="menu-header">
-          <h3>Навигация</h3>
+          <h1>SkyVue</h1>
         </div>
         
         <nav class="menu-content">
@@ -68,7 +68,9 @@ defineExpose({ open: () => (isOpen.value = true), close: closeMenu });
   cursor: pointer;
   padding: 5px;
 }
-
+h1{
+  text-align: center;
+}
 .line {
   width: 100%;
   height: 4px;
@@ -77,9 +79,9 @@ defineExpose({ open: () => (isOpen.value = true), close: closeMenu });
 }
 
 /* Анимация бургера в крестик */
-.is-active .line:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.is-active .line:nth-child(1) { transform: translateY(6px) rotate(45deg); }
 .is-active .line:nth-child(2) { opacity: 0; }
-.is-active .line:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+.is-active .line:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
 /* Боковая панель */
 .side-panel {
@@ -90,7 +92,7 @@ defineExpose({ open: () => (isOpen.value = true), close: closeMenu });
   height: 100vh;
   background: white;
   z-index: 1000;
-  padding: 80px 20px 20px;
+  padding: 0 20px 20px;
 }
 
 /* Затемнение фона */

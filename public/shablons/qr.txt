@@ -14,13 +14,3 @@ class QrDetect():
 
         if barcodes:
             self.qr_data = barcodes[0].data.decode('utf-8')
-
-
-#в MAIN для вызова функции необходимо следующее:
-#1. создаём и вызываем подписчика, который вызывает функцию чтения кьюаркода
-qd = QrDetect()
-qr_sub = rospy.Subscriber('main_camera/image_raw',Image, qd.qr_detection,queue_size=1)
-#2. задаём время работы подписчика (за 1 секунду примерно 20 раз вызывается функция) 
-rospy.sleep(2) 
-#3. выключаем подписчика
-qr_sub.unregister() 

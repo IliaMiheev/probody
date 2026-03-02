@@ -85,6 +85,7 @@ def signal_handler(sig, frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
+<<qr_function>>
 
 def main():
     navigate_wait(z=1,frame_id='body',auto_arm=True) #должно быть. включает моторы и поднимает дрон на метр вверх

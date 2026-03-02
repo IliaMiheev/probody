@@ -1,7 +1,7 @@
 <script setup>
-import {ref, onMounted} from "vue";
+import { ref, onMounted } from "vue";
 import izitoast from "./izitoast";
-import {useEventListener} from "@vueuse/core";
+import { useEventListener } from "@vueuse/core";
 import MyDialog from "./components/MyDialog.vue";
 import MyDropMenu from "./components/MyDropMenu.vue";
 import copyToclipboard from "./copyToclipboard";
@@ -48,7 +48,7 @@ function setNumber(item) {
 function saveResult() {
     let navigate_waites = "";
     for (const item of listOfTrips.value) {
-    navigate_waites += `\tnavigate_wait(${item.x}, ${item.y})\n`;
+        navigate_waites += `\tnavigate_wait(${item.x}, ${item.y})\n`;
     }
     fetch("/shablons/emergency_and_navigate.txt")
         .then((response) => response.text())
@@ -105,7 +105,7 @@ function handleDownloadBtn() {
     console.log(finallyText)
     // Создание файла
     const downloadUrl = ref('');
-    const blob = new Blob([finallyText], {type: 'text/plain'});
+    const blob = new Blob([finallyText], { type: 'text/plain' });
     downloadUrl.value = URL.createObjectURL(blob);
     // Задержка для избежания ошибок в некоторых браузерах
     setTimeout(() => {
@@ -129,13 +129,8 @@ function handleDownloadBtn() {
 <template>
     <div class="wraper">
         <div class="grid">
-            <div
-                class="square"
-                v-for="(item, index) in numbers"
-                :data-key="index"
-                :key="index"
-                @click="setNumber(item)"
-            >
+            <div class="square" v-for="(item, index) in numbers" :data-key="index" :key="index"
+                @click="setNumber(item)">
                 {{ numbers[index].variable.join(", ") }}
             </div>
         </div>
@@ -145,16 +140,12 @@ function handleDownloadBtn() {
             <button @click="cleanResult">Очистить</button>
             <button @click="cancel">Отменить</button>
         </div>
-        <MyDropMenu/>
+        <MyDropMenu />
     </div>
 
 
-    <MyDialog
-        v-show="isModalVisible"
-        @close="isModalVisible = false"
-        class="dialogWindow"
-        :is-success=listOfTrips.length
-    >
+    <MyDialog v-show="isModalVisible" @close="isModalVisible = false" class="dialogWindow"
+        :is-success=Boolean(listOfTrips.length)>
         <template #header>
             <strong v-if="listOfTrips.length">Код готов!</strong>
             <strong v-else>Код не готов!</strong>
@@ -165,9 +156,9 @@ function handleDownloadBtn() {
         </template>
         <template #footer>
             <div v-if="listOfTrips.length">
-                <button type="button" @click="handleDownloadBtn">Скачать код</button>
-                <button type="button" @click="copyAndToast(finallyText)">Скопировать код</button>
-                <button type="button" @click="isModalVisible = false">ОК</button>
+                <button @click="handleDownloadBtn">Скачать код</button>
+                <button @click="copyAndToast(finallyText)">Скопировать код</button>
+                <button @click="isModalVisible = false">ОК</button>
             </div>
         </template>
     </MyDialog>
@@ -196,8 +187,8 @@ html {
 }
 
 .square {
-    width: var(--side); /* Ширина квадрата */
-    height: var(--side); /* Высота квадрата */
+    width: var(--side);
+    height: var(--side);
     background-image: url("images/image.jpg");
     background-size: cover;
     border: 3px solid rgb(251, 251, 251);
@@ -212,9 +203,9 @@ html {
 
     color: white;
     text-shadow: -1px -1px 0 black,
-    1px -1px 0 black,
-    -1px 1px 0 black,
-    1px 1px 0 black;
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black;
 }
 
 .square:hover {

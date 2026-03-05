@@ -11,14 +11,12 @@ const clickCount = ref(1); // Счетчик нажатий
 const listOfTrips = ref([]);
 const isModalVisible = ref(false);
 let finallyText = "";
-const qr_sub_text = [
-  "\tqd = QrDetect()\n",
-  "\tqr_sub = rospy.Subscriber('main_camera/image_raw',Image, qd.qr_detection,queue_size=1)\n",
-  "\trospy.sleep(2)\n",
-  "\tqr_sub.unregister()\n"
-];
-let is_qr_used = 0;
-let head = "";
+const qr_sub_text = `
+  \tqr_sub = rospy.Subscriber('main_camera/image_raw',Image, qr_detection,queue_size=1)\n
+  \trospy.sleep(2)\n
+  \tqr_sub.unregister()\n
+`
+let is_qr__head_used = 0;
 
 onMounted(() => {
     for (let i = 0; i < 100; i++) {
@@ -58,8 +56,8 @@ function saveResult() {
     for (const item of listOfTrips.value) {
     navigate_waites += `\tnavigate_wait(${item.x}, ${item.y})\n`;
     if (item.x===1 && item.y === 1) {
-        navigate_waites += qr_sub_text.join('')
-        is_qr_used=1
+        navigate_waites += qr_sub_text
+        is_qr__head_used=1
     }
     } 
     
@@ -69,9 +67,9 @@ function saveResult() {
             finallyText = textOfCode.replace("<<navigate_wait>>", navigate_waites);
         });
     isModalVisible.value = true;
-    if (is_qr_used === 1) {
+    if (is_qr__head_used === 1) {
         Qr_head() 
-        is_qr_used +=1
+        is_qr__head_used +=1
     }
 }
 
@@ -79,8 +77,7 @@ function Qr_head() {
     fetch("/shablons/qr.txt")
         .then((response) => response.text())
         .then((textOfCode) => {
-            head = textOfCode;
-            finallyText = finallyText.replace("<<qr_function>>", head);
+            finallyText = finallyText.replace("<<qr_function>>", textOfCode);
         })
 }
 

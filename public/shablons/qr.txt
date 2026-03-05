@@ -1,16 +1,7 @@
-class QrDetect():
-    def __init__(self):
-        self.qr_data = ''
-
-    def getQrData(self):
-        return self.qr_data
+def qr_detection(data):
+    cv_image = bridge.imgmsg_to_cv2(data, 'bgr8')
+    barcodes = pyzbar.decode(cv_image)
     
-    def qr_detection(self,data):
-        '''сканирование qr кода'''
-        if self.qr_data!= '':
-            return
-        cv_image = bridge.imgmsg_to_cv2(data, 'bgr8')
-        barcodes = pyzbar.decode(cv_image)
-
-        if barcodes:
-            self.qr_data = barcodes[0].data.decode('utf-8')
+    if barcodes:
+        qr_data = barcodes[0].data.decode('utf-8')
+        return qr_data

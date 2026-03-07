@@ -12,12 +12,6 @@ const clickCount = ref(1); // Счетчик нажатий
 const listOfTrips = ref([]);
 const isModalVisible = ref(false);
 let finallyText = ref("");
-const qr_sub_text = `
-  \tqr_sub = rospy.Subscriber('main_camera/image_raw',Image, qr_detection,queue_size=1)\n
-  \trospy.sleep(2)\n
-  \tqr_sub.unregister()\n
-`
-let is_qr__head_used = 0;
 
 onMounted(() => {
     for (let i = 0; i < 100; i++) {
@@ -27,6 +21,7 @@ onMounted(() => {
             y: 9 - Math.floor(i / 10),
             index: i,
             isPlatform: false,
+            isQR: false,
             BgImg: 'images/ArUco-marker.jpg'
         });
     }
@@ -58,8 +53,11 @@ async function saveResult() {
     finallyText.value = "";
     const mainCode = ref("");
     const colorDetectClass = ref("");
+    const QRDetectClass = ref("");
     const colorDetectCode = ref("");
+    const QRDetectCode = ref("");
     const isUsedPlatform = listOfTrips.value.some(item => item.isPlatform);
+    const isUsedQR = listOfTrips.value.some(item => item.isQR);
 
     if (isUsedPlatform) {
         const response = await fetch("/shablons/color.txt")
@@ -69,10 +67,21 @@ async function saveResult() {
         colorDetectCode.value += `\t${textOfCode[1].trim()}\n`;
     }
 
+    if (isUsedQR) {
+        const response = await fetch("/shablons/qr.txt")
+        let textOfCode = await response.text()
+        textOfCode = textOfCode.split('<<separator>>')
+        QRDetectClass.value = textOfCode[0]
+        QRDetectCode.value += `\t${textOfCode[1].trim()}\n`;
+    } 
+
     for (const item of listOfTrips.value) {
         mainCode.value += `\tnavigate_wait(${item.x}, ${item.y})\n`;
-        if (isUsedPlatform) {
+        if (item.isPlatform) {
             mainCode.value += colorDetectCode.value + '\n'
+        }
+        if (item.isQR) {
+            mainCode.value += QRDetectCode.value + '\n'
         }
     }
     const response = await fetch("/shablons/emergency_and_navigate.txt")
@@ -81,20 +90,11 @@ async function saveResult() {
     if (isUsedPlatform) {
         finallyText.value = finallyText.value.replace("<<ColorDetect>>", colorDetectClass.value);
     }
-    isModalVisible.value = true;
-    if (is_qr__head_used === 1) {
-        Qr_head() 
-        is_qr__head_used +=1
+    if (isUsedQR) {
+        finallyText.value = finallyText.value.replace("<<qr_function>>", QRDetectClass.value);
     }
-}
-
-function Qr_head() {
-    fetch("/shablons/qr.txt")
-        .then((response) => response.text())
-        .then((textOfCode) => {
-            finallyText = finallyText.replace("<<qr_function>>", textOfCode);
-        })
-}
+    isModalVisible.value = true;}
+    
 
 function cancel() {
 
@@ -177,6 +177,26 @@ function deletePlatform(item) {
     clickCount.value--
 }
 
+function createQR(item) {
+    if (!item.isQR) {
+        listOfTrips.value.push(item)
+        numbers.value[item.index].variable.push(clickCount.value);
+    }
+    item['isQR'] = true
+    numbers.value[item.index].BgImg = `images/qr.jpg`
+    clickCount.value++
+}
+
+function deleteQR(item) {
+    item['isQR'] = false
+    const index = listOfTrips.value.indexOf(item);
+    if (index !== -1) {
+        listOfTrips.value.splice(index, 1);
+    }
+    numbers.value[item.index].BgImg = 'images/ArUco-marker.jpg'
+    clickCount.value--
+}
+
 function onContextMenu(e, item) {
     ContextMenu.showContextMenu({
         theme: 'mac dark',
@@ -209,11 +229,11 @@ function onContextMenu(e, item) {
                 children: [
                     {
                         label: "Добавить",
-                        onClick: () => alert('Здесь ещё предстоит написать код')
+                        onClick: () => createQR(item)
                     },
                     {
                         label: "Удалить",
-                        onClick: () => alert('Здесь ещё предстоит написать код')
+                        onClick: () => deleteQR(item)
                     },
                 ],
             },

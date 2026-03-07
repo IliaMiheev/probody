@@ -1,5 +1,5 @@
 import copy from 'copy-to-clipboard';
-import iziToast from '@/iziToast.js';
+import iziToast from '@/shared/iziToast.js';
 
 function copyToclipboard(text) {
     try {

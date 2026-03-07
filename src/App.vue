@@ -1,11 +1,11 @@
 <script setup>
 import {ref, onMounted} from "vue";
-import izitoast from "./izitoast";
+import izitoast from "./shared/izitoast";
 import {useEventListener} from "@vueuse/core";
 import MyDialog from "./components/MyDialog.vue";
 import MyDropMenu from "./components/MyDropMenu.vue";
-import copyToclipboard from "./copyToclipboard";
-import ContextMenu from '@imengyu/vue3-context-menu'
+import copyToclipboard from "./shared/copyToclipboard";
+import onContextMenu from './shared/ContextMenu'
 
 const numbers = ref([]); // Инициализируем массив с пустыми строками
 const clickCount = ref(1); // Счетчик нажатий
@@ -159,55 +159,6 @@ function deletePlatform(item) {
     clickCount.value--
 }
 
-function onContextMenu(e, item) {
-    ContextMenu.showContextMenu({
-        theme: 'mac dark',
-        x: e.x,
-        y: e.y,
-        items: [
-            {
-                label: "Платформы",
-                children: [
-                    {
-                        label: "Белая",
-                        onClick: () => createPlatform(item, 'white'),
-                    },
-                    {
-                        label: "Синяя",
-                        onClick: () => createPlatform(item, 'blue'),
-                    },
-                    {
-                        label: "Красная",
-                        onClick: () => createPlatform(item, 'red'),
-                    },
-                    {
-                        label: "Удалить",
-                        onClick: () => deletePlatform(item),
-                    },
-                ]
-            },
-            {
-                label: "QR код",
-                children: [
-                    {
-                        label: "Добавить",
-                        onClick: () => alert('Здесь ещё предстоит написать код')
-                    },
-                    {
-                        label: "Удалить",
-                        onClick: () => alert('Здесь ещё предстоит написать код')
-                    },
-                ],
-            },
-            {
-                label: "Отмена",
-                onClick: () => {
-                    alert('Здесь ещё предстоит написать код')
-                }
-            },
-        ]
-    });
-}
 </script>
 
 <template>

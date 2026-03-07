@@ -39,9 +39,7 @@ def color_detection(data, print_type='str'):
         else:
             color = None
 
-#в MAIN для вызова функции должно быть:
-#color_sub = rospy.Subscriber('main_camera/image_raw', Image, 
-                            #lambda img: color_detection(img, print_type='rgb'), 
-                            #queue_size=1)
-#rospy.sleep(2)
-#color_sub.unregister()
+<<separator>>
+    color_sub = rospy.Subscriber('main_camera/image_raw', Image, lambda img: color_detection(img, print_type='rgb'), queue_size=1)
+    rospy.sleep(2)
+    color_sub.unregister()

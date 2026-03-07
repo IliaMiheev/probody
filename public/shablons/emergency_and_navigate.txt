@@ -20,6 +20,7 @@ land = rospy.ServiceProxy('land', Trigger) #сервис для посадки
 rospy.init_node('flight')
 bridge = CvBridge()
 
+
 def navigate_wait(x=0, y=0, z=1, speed=0.5, frame_id='aruco_map', auto_arm=False, tolerance=0.2,sleep=2):
     """
     Летит в указанную точку и ждет, пока дрон туда ДОЛЕТИТ.
@@ -88,13 +89,14 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 <<qr_function>>
+<<ColorDetect>>
 
 def main():
     navigate_wait(z=1,frame_id='body',auto_arm=True) #должно быть. включает моторы и поднимает дрон на метр вверх
     #в дальнейшем не передавать переменной auto_arm значение True
 
     
-<<navigate_wait>>
+<<main>>
  
 
     land() #посадка

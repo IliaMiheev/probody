@@ -5,12 +5,13 @@ import {useEventListener} from "@vueuse/core";
 import MyDialog from "./components/MyDialog.vue";
 import MyDropMenu from "./components/MyDropMenu.vue";
 import copyToclipboard from "./copyToclipboard";
+import ContextMenu from '@imengyu/vue3-context-menu'
 
 const numbers = ref([]); // Инициализируем массив с пустыми строками
 const clickCount = ref(1); // Счетчик нажатий
 const listOfTrips = ref([]);
 const isModalVisible = ref(false);
-let finallyText = "";
+let finallyText = ref("");
 const qr_sub_text = `
   \tqr_sub = rospy.Subscriber('main_camera/image_raw',Image, qr_detection,queue_size=1)\n
   \trospy.sleep(2)\n
@@ -25,6 +26,8 @@ onMounted(() => {
             x: i % 10,
             y: 9 - Math.floor(i / 10),
             index: i,
+            isPlatform: false,
+            BgImg: 'images/ArUco-marker.jpg'
         });
     }
 });
@@ -37,8 +40,7 @@ function setNumber(item) {
         listOfTrips.value.push(item);
         clickCount.value++;
     } else {
-        //если нажимаем на ранее отмеченную клетку (не последнюю), то выводится ошибка
-        listOfTrips.value.push(item);
+        //если нажимаем на ранее отмеченную клетку, то выводится ошибка
         if (numbers.value[item.index].variable.at(-1) === clickCount.value - 1) {
             izitoast.error({
                 title: "Ошибка",
@@ -46,26 +48,39 @@ function setNumber(item) {
             });
             return;
         }
+        listOfTrips.value.push(item);
         numbers.value[item.index].variable.push(clickCount.value);
         clickCount.value++;
     }
 }
 
-function saveResult() {
-    let navigate_waites = "";
-    for (const item of listOfTrips.value) {
-    navigate_waites += `\tnavigate_wait(${item.x}, ${item.y})\n`;
-    if (item.x===1 && item.y === 1) {
-        navigate_waites += qr_sub_text
-        is_qr__head_used=1
+async function saveResult() {
+    finallyText.value = "";
+    const mainCode = ref("");
+    const colorDetectClass = ref("");
+    const colorDetectCode = ref("");
+    const isUsedPlatform = listOfTrips.value.some(item => item.isPlatform);
+
+    if (isUsedPlatform) {
+        const response = await fetch("/shablons/color.txt")
+        let textOfCode = await response.text()
+        textOfCode = textOfCode.split('<<separator>>')
+        colorDetectClass.value = textOfCode[0]
+        colorDetectCode.value += `\t${textOfCode[1].trim()}\n`;
     }
-    } 
-    
-    fetch("/shablons/emergency_and_navigate.txt")
-        .then((response) => response.text())
-        .then((textOfCode) => {
-            finallyText = textOfCode.replace("<<navigate_wait>>", navigate_waites);
-        });
+
+    for (const item of listOfTrips.value) {
+        mainCode.value += `\tnavigate_wait(${item.x}, ${item.y})\n`;
+        if (isUsedPlatform) {
+            mainCode.value += colorDetectCode.value + '\n'
+        }
+    }
+    const response = await fetch("/shablons/emergency_and_navigate.txt")
+    let textOfCode = await response.text()
+    finallyText.value = textOfCode.replace("<<main>>", mainCode.value);
+    if (isUsedPlatform) {
+        finallyText.value = finallyText.value.replace("<<ColorDetect>>", colorDetectClass.value);
+    }
     isModalVisible.value = true;
     if (is_qr__head_used === 1) {
         Qr_head() 
@@ -82,27 +97,22 @@ function Qr_head() {
 }
 
 function cancel() {
-    numbers.value[listOfTrips.value.at(-1).index].variable.pop();
-    listOfTrips.value.pop();
 
     if (clickCount.value === 1) {
         return;
     } else {
+        numbers.value[listOfTrips.value.at(-1).index].variable.pop();
+        listOfTrips.value.pop();
         clickCount.value--;
     }
 }
 
 function cleanResult() {
     clickCount.value = 1;
-    numbers.value = [];
     listOfTrips.value = [];
     for (let i = 0; i < 100; i++) {
-        numbers.value.push({
-            variable: [],
-            x: i % 10,
-            y: 9 - Math.floor(i / 10),
-            index: i,
-        });
+        numbers.value[i].variable = [];
+        numbers.value[i].BgImg = 'images/ArUco-marker.jpg'
     }
 }
 
@@ -125,10 +135,9 @@ function copyAndToast(text) {
 }
 
 function handleDownloadBtn() {
-    console.log(finallyText)
     // Создание файла
     const downloadUrl = ref('');
-    const blob = new Blob([finallyText], {type: 'text/plain'});
+    const blob = new Blob([finallyText.value], {type: 'text/plain'});
     downloadUrl.value = URL.createObjectURL(blob);
     // Задержка для избежания ошибок в некоторых браузерах
     setTimeout(() => {
@@ -147,18 +156,84 @@ function handleDownloadBtn() {
     })
     isModalVisible.value = false
 }
+
+function createPlatform(item, color) {
+    if (!item.isPlatform) {
+        listOfTrips.value.push(item)
+        numbers.value[item.index].variable.push(clickCount.value);
+    }
+    item['isPlatform'] = true
+    numbers.value[item.index].BgImg = `images/${color}-platform.jpg`
+    clickCount.value++
+}
+
+function deletePlatform(item) {
+    item['isPlatform'] = false
+    const index = listOfTrips.value.indexOf(item);
+    if (index !== -1) {
+        listOfTrips.value.splice(index, 1);
+    }
+    numbers.value[item.index].BgImg = 'images/ArUco-marker.jpg'
+    clickCount.value--
+}
+
+function onContextMenu(e, item) {
+    ContextMenu.showContextMenu({
+        theme: 'mac dark',
+        x: e.x,
+        y: e.y,
+        items: [
+            {
+                label: "Платформы",
+                children: [
+                    {
+                        label: "Белая",
+                        onClick: () => createPlatform(item, 'white'),
+                    },
+                    {
+                        label: "Синяя",
+                        onClick: () => createPlatform(item, 'blue'),
+                    },
+                    {
+                        label: "Красная",
+                        onClick: () => createPlatform(item, 'red'),
+                    },
+                    {
+                        label: "Удалить",
+                        onClick: () => deletePlatform(item),
+                    },
+                ]
+            },
+            {
+                label: "QR код",
+                children: [
+                    {
+                        label: "Добавить",
+                        onClick: () => alert('Здесь ещё предстоит написать код')
+                    },
+                    {
+                        label: "Удалить",
+                        onClick: () => alert('Здесь ещё предстоит написать код')
+                    },
+                ],
+            },
+            {
+                label: "Отмена",
+                onClick: () => {
+                    alert('Здесь ещё предстоит написать код')
+                }
+            },
+        ]
+    });
+}
 </script>
 
 <template>
     <div class="wraper">
         <div class="grid">
-            <div
-                class="square"
-                v-for="(item, index) in numbers"
-                :data-key="index"
-                :key="index"
-                @click="setNumber(item)"
-            >
+            <div class="square" v-for="(item, index) in numbers" :data-key="index" :key="index"
+                 @click="setNumber(item)" @contextmenu.prevent="onContextMenu($event, item)"
+                 :style="{backgroundImage: `url(${item.BgImg})`}">
                 {{ numbers[index].variable.join(", ") }}
             </div>
         </div>
@@ -172,12 +247,8 @@ function handleDownloadBtn() {
     </div>
 
 
-    <MyDialog
-        v-show="isModalVisible"
-        @close="isModalVisible = false"
-        class="dialogWindow"
-        :is-success=listOfTrips.length
-    >
+    <MyDialog v-show="isModalVisible" @close="isModalVisible = false" class="dialogWindow"
+              :is-success=Boolean(listOfTrips.length)>
         <template #header>
             <strong v-if="listOfTrips.length">Код готов!</strong>
             <strong v-else>Код не готов!</strong>
@@ -188,9 +259,9 @@ function handleDownloadBtn() {
         </template>
         <template #footer>
             <div v-if="listOfTrips.length">
-                <button type="button" @click="handleDownloadBtn">Скачать код</button>
-                <button type="button" @click="copyAndToast(finallyText)">Скопировать код</button>
-                <button type="button" @click="isModalVisible = false">ОК</button>
+                <button @click="handleDownloadBtn">Скачать код</button>
+                <button @click="copyAndToast(finallyText)">Скопировать код</button>
+                <button @click="isModalVisible = false">ОК</button>
             </div>
         </template>
     </MyDialog>
@@ -219,14 +290,11 @@ html {
 }
 
 .square {
-    width: var(--side); /* Ширина квадрата */
-    height: var(--side); /* Высота квадрата */
-    background-image: url("images/image.jpg");
+    width: var(--side);
+    height: var(--side);
     background-size: cover;
     border: 3px solid rgb(251, 251, 251);
-    background-color: #e0e0e0;
     cursor: pointer;
-    transition: background-color 0.3s;
     overflow-y: scroll;
 
     background-blend-mode: multiply;

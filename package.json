@@ -30,6 +30,7 @@
     "vite": "^5.4.21"
   },
   "dependencies": {
+    "@imengyu/vue3-context-menu": "^1.5.4",
     "@vueuse/core": "^14.2.1",
     "copy-to-clipboard": "^3.3.3",
     "electron-squirrel-startup": "^1.0.1",

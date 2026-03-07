@@ -140,13 +140,13 @@ function handleDownloadBtn() {
 }
 
 function createPlatform(item, color) {
-    if (!item.isPlatform) {
+    if (!item.isPlatform && item.variable.at(-1) !== clickCount.value - 1) {
         listOfTrips.value.push(item)
         numbers.value[item.index].variable.push(clickCount.value);
+        clickCount.value++
+        item['isPlatform'] = true
     }
-    item['isPlatform'] = true
     numbers.value[item.index].BgImg = `images/${color}-platform.jpg`
-    clickCount.value++
 }
 
 function deletePlatform(item) {

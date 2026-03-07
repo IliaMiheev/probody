@@ -43,12 +43,9 @@ class ColorDetect():
                 self.color = 'red'
             else:
                 self.color = None
-
-#в MAIN для вызова функции должно быть:
-# cd = ColorDetect()
-    #color_sub = rospy.Subscriber('main_camera/image_raw', Image, 
-                              #lambda img: cd.detect_color_callback(img, print_type='rgb'), 
-                              #queue_size=1)
-    # print(cd.getColor())
-    #rospy.sleep(2)
-    #color_sub.unregister()
+<<separator>>
+    cd = ColorDetect()
+    color_sub = rospy.Subscriber('main_camera/image_raw', Image, lambda img: cd.detect_color_callback(img, print_type='rgb'), queue_size=1)
+    print(cd.getColor())
+    rospy.sleep(2)
+    color_sub.unregister()

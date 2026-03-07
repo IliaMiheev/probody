@@ -17,6 +17,7 @@ get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry) #сеов�
 navigate = rospy.ServiceProxy('navigate', srv.Navigate) #сервис для полета по указаным координатам
 land = rospy.ServiceProxy('land', Trigger) #сервис для посадки
 
+<<ColorDetect>>
 
 def navigate_wait(x=0, y=0, z=1, speed=0.5, frame_id='aruco_map', auto_arm=False, tolerance=0.2,sleep=2):
     """
@@ -91,7 +92,7 @@ def main():
     #в дальнейшем не передавать переменной auto_arm значение True
 
     
-<<navigate_wait>>
+<<main>>
  
 
     land() #посадка

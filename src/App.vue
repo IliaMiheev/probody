@@ -65,7 +65,7 @@ async function saveResult() {
 
     for (const item of listOfTrips.value) {
         mainCode.value += `\tnavigate_wait(${item.x}, ${item.y})\n`;
-        if (isUsedPlatform) {
+        if (item.isPlatform) {
             mainCode.value += colorDetectCode.value + '\n'
         }
     }

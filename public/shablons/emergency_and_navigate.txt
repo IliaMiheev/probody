@@ -13,8 +13,8 @@ import numpy as np
 import math
 import cv2
 
-get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry) #сеовис для получения местонахождения
-navigate = rospy.ServiceProxy('navigate', srv.Navigate) #сервис для полета по указаным координатам
+get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry) #сервис для получения местонахождения
+navigate = rospy.ServiceProxy('navigate', srv.Navigate) #сервис для полета по указанным координатам
 land = rospy.ServiceProxy('land', Trigger) #сервис для посадки
 
 rospy.init_node('flight')

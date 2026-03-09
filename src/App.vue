@@ -219,10 +219,6 @@ function onContextMenu(e, item) {
                         onClick: () => createPlatform(item, 'red'),
                     },
                     {
-                        label: "Зелёная",
-                        onClick: () => createPlatform(item, 'green'),
-                    },
-                    {
                         label: "Удалить",
                         onClick: () => deletePlatform(item),
                     },

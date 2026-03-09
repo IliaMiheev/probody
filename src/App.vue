@@ -36,7 +36,7 @@ function setNumber(item) {
         clickCount.value++;
     } else {
         //если нажимаем на ранее отмеченную клетку, то выводится ошибка
-        if (numbers.value[item.index].variable.at(-1) === clickCount.value - 1) {
+        if (item.variable.at(-1) === clickCount.value - 1) {
             izitoast.error({
                 title: "Ошибка",
                 message: "Нельзя выбирать один и тот же aruco маркер 2 раза подряд",
@@ -44,7 +44,7 @@ function setNumber(item) {
             return;
         }
         listOfTrips.value.push(item);
-        numbers.value[item.index].variable.push(clickCount.value);
+        item.variable.push(clickCount.value);
         clickCount.value++;
     }
 }
@@ -73,7 +73,7 @@ async function saveResult() {
         textOfCode = textOfCode.split('<<separator>>')
         QRDetectClass.value = textOfCode[0]
         QRDetectCode.value += `\t${textOfCode[1].trim()}\n`;
-    } 
+    }
 
     for (const item of listOfTrips.value) {
         mainCode.value += `\tnavigate_wait(${item.x}, ${item.y})\n`;
@@ -89,31 +89,35 @@ async function saveResult() {
     finallyText.value = textOfCode.replace("<<main>>", mainCode.value);
     if (isUsedPlatform) {
         finallyText.value = finallyText.value.replace("<<ColorDetect>>", colorDetectClass.value);
+    } else {
+        finallyText.value = finallyText.value.replace("<<ColorDetect>>", '');
     }
     if (isUsedQR) {
         finallyText.value = finallyText.value.replace("<<qr_function>>", QRDetectClass.value);
+    } else {
+        finallyText.value = finallyText.value.replace("<<qr_function>>", '');
     }
-    isModalVisible.value = true;}
-    
+    isModalVisible.value = true;
+}
 
 function cancel() {
-
     if (clickCount.value === 1) {
         return;
-    } else {
-        numbers.value[listOfTrips.value.at(-1).index].variable.pop();
-        listOfTrips.value.pop();
-        clickCount.value--;
     }
+    listOfTrips.value.at(-1).variable.pop();
+    listOfTrips.value.pop();
+    clickCount.value--;
 }
 
 function cleanResult() {
     clickCount.value = 1;
+    listOfTrips.value.forEach(item => {
+        item.isPlatform = false;
+        item.isQR = false;
+        item.variable = [];
+        item.BgImg = 'images/ArUco-marker.jpg'
+    })
     listOfTrips.value = [];
-    for (let i = 0; i < 100; i++) {
-        numbers.value[i].variable = [];
-        numbers.value[i].BgImg = 'images/ArUco-marker.jpg'
-    }
 }
 
 // Обрабатываем нажатие Ctrl + Z
@@ -158,43 +162,57 @@ function handleDownloadBtn() {
 }
 
 function createPlatform(item, color) {
-    if (!item.isPlatform && item.variable.at(-1) !== clickCount.value - 1) {
+    if (!item.variable.length) {
+        item.variable.push(clickCount.value);
         listOfTrips.value.push(item)
-        numbers.value[item.index].variable.push(clickCount.value);
         clickCount.value++
-        item['isPlatform'] = true
     }
-    numbers.value[item.index].BgImg = `images/${color}-platform.jpg`
+    item.isPlatform = true;
+    item.isQR = false;
+    item.BgImg = `images/${color}-platform.jpg`
 }
 
 function deletePlatform(item) {
-    item['isPlatform'] = false
-    const index = listOfTrips.value.indexOf(item);
-    if (index !== -1) {
-        listOfTrips.value.splice(index, 1);
-    }
-    numbers.value[item.index].BgImg = 'images/ArUco-marker.jpg'
-    clickCount.value--
+    item.BgImg = 'images/ArUco-marker.jpg'
+    item.isPlatform = false
 }
 
 function createQR(item) {
-    if (!item.isQR) {
+    if (!item.variable.length) {
+        item.variable.push(clickCount.value);
         listOfTrips.value.push(item)
-        numbers.value[item.index].variable.push(clickCount.value);
+        clickCount.value++
     }
-    item['isQR'] = true
-    numbers.value[item.index].BgImg = `images/qr.jpg`
-    clickCount.value++
+    item.isPlatform = false;
+    item.isQR = true;
+    item.BgImg = `images/qr.jpg`
 }
 
 function deleteQR(item) {
-    item['isQR'] = false
+    item.BgImg = 'images/ArUco-marker.jpg'
+    item.isQR = true
+}
+
+function deletePointMap(item) {
     const index = listOfTrips.value.indexOf(item);
     if (index !== -1) {
+        const deletedIndex = item.variable.at(-1)
+        listOfTrips.value.forEach(square => {
+            square.variable.map(itemVariable => {
+                if (itemVariable === deletedIndex) {
+                    square.variable = []
+                }
+                if (itemVariable > deletedIndex) {
+                    square.variable[square.variable.indexOf(itemVariable)]--
+                }
+            })
+        })
         listOfTrips.value.splice(index, 1);
+        clickCount.value--
+        item.isQR = false
+        item.isPlatform = false
+        item.BgImg = 'images/ArUco-marker.jpg'
     }
-    numbers.value[item.index].BgImg = 'images/ArUco-marker.jpg'
-    clickCount.value--
 }
 
 function onContextMenu(e, item) {
@@ -238,10 +256,8 @@ function onContextMenu(e, item) {
                 ],
             },
             {
-                label: "Отмена",
-                onClick: () => {
-                    alert('Здесь ещё предстоит написать код')
-                }
+                label: "Удалить",
+                onClick: () => deletePointMap(item),
             },
         ]
     });
@@ -322,6 +338,7 @@ html {
     transition: background-color 0.3s ease;
 
     color: white;
+    font-size: 18px;
     text-shadow: -1px -1px 0 black,
     1px -1px 0 black,
     -1px 1px 0 black,

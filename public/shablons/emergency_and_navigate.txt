@@ -40,7 +40,7 @@ def navigate_wait(x=0, y=0, z=1, speed=0.5, frame_id='aruco_map', auto_arm=False
 def emergency_stop():
 
     """Функция экстренной остановки, срабатывает при нажатии Ctrl + C"""
- 
+
     print("\n" + "="*50)
     print("EMERGENCY STOP ACTIVATED!")
     print("="*50)
@@ -97,7 +97,7 @@ def main():
 
     
 <<main>>
- 
+
 
     land() #посадка
 

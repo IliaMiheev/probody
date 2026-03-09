@@ -13,9 +13,12 @@ import numpy as np
 import math
 import cv2
 
-get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry) #сеовис для получения местонахождения
-navigate = rospy.ServiceProxy('navigate', srv.Navigate) #сервис для полета по указаным координатам
+get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry) #сервис для получения местонахождения
+navigate = rospy.ServiceProxy('navigate', srv.Navigate) #сервис для полета по указанным координатам
 land = rospy.ServiceProxy('land', Trigger) #сервис для посадки
+
+rospy.init_node('flight')
+bridge = CvBridge()
 
 
 def navigate_wait(x=0, y=0, z=1, speed=0.5, frame_id='aruco_map', auto_arm=False, tolerance=0.2,sleep=2):
@@ -37,7 +40,7 @@ def navigate_wait(x=0, y=0, z=1, speed=0.5, frame_id='aruco_map', auto_arm=False
 def emergency_stop():
 
     """Функция экстренной остановки, срабатывает при нажатии Ctrl + C"""
- 
+
     print("\n" + "="*50)
     print("EMERGENCY STOP ACTIVATED!")
     print("="*50)
@@ -85,14 +88,16 @@ def signal_handler(sig, frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
+<<qr_function>>
+<<ColorDetect>>
 
 def main():
     navigate_wait(z=1,frame_id='body',auto_arm=True) #должно быть. включает моторы и поднимает дрон на метр вверх
     #в дальнейшем не передавать переменной auto_arm значение True
 
     
-<<navigate_wait>>
- 
+<<main>>
+
 
     land() #посадка
 

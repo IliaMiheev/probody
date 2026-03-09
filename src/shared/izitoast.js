@@ -1,4 +1,4 @@
-import iziToast from "izitoast"
+import iziToast from 'iziToast';
 
 iziToast.settings({
     timeout: 3000,

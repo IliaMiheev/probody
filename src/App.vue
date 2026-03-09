@@ -1,16 +1,17 @@
 <script setup>
-import {ref, onMounted} from "vue";
-import izitoast from "./izitoast";
+import {ref, onMounted, h} from "vue";
+import izitoast from "./shared/izitoast";
 import {useEventListener} from "@vueuse/core";
 import MyDialog from "./components/MyDialog.vue";
 import MyDropMenu from "./components/MyDropMenu.vue";
-import copyToclipboard from "./copyToclipboard";
+import copyToclipboard from "./shared/copyToclipboard";
+import ContextMenu from "@imengyu/vue3-context-menu";
 
 const numbers = ref([]); // Инициализируем массив с пустыми строками
 const clickCount = ref(1); // Счетчик нажатий
 const listOfTrips = ref([]);
 const isModalVisible = ref(false);
-let finallyText = "";
+let finallyText = ref("");
 
 onMounted(() => {
     for (let i = 0; i < 100; i++) {
@@ -19,6 +20,9 @@ onMounted(() => {
             x: i % 10,
             y: 9 - Math.floor(i / 10),
             index: i,
+            isPlatform: false,
+            isQR: false,
+            BgImg: 'images/ArUco-marker.jpg'
         });
     }
 });
@@ -31,56 +35,89 @@ function setNumber(item) {
         listOfTrips.value.push(item);
         clickCount.value++;
     } else {
-        //если нажимаем на ранее отмеченную клетку (не последнюю), то выводится ошибка
-        listOfTrips.value.push(item);
-        if (numbers.value[item.index].variable.at(-1) === clickCount.value - 1) {
+        //если нажимаем на ранее отмеченную клетку, то выводится ошибка
+        if (item.variable.at(-1) === clickCount.value - 1) {
             izitoast.error({
                 title: "Ошибка",
                 message: "Нельзя выбирать один и тот же aruco маркер 2 раза подряд",
             });
             return;
         }
-        numbers.value[item.index].variable.push(clickCount.value);
+        listOfTrips.value.push(item);
+        item.variable.push(clickCount.value);
         clickCount.value++;
     }
 }
 
-function saveResult() {
-    let navigate_waites = "";
-    for (const item of listOfTrips.value) {
-    navigate_waites += `\tnavigate_wait(${item.x}, ${item.y})\n`;
+async function saveResult() {
+    finallyText.value = "";
+    const mainCode = ref("");
+    const colorDetectClass = ref("");
+    const QRDetectClass = ref("");
+    const colorDetectCode = ref("");
+    const QRDetectCode = ref("");
+    const isUsedPlatform = listOfTrips.value.some(item => item.isPlatform);
+    const isUsedQR = listOfTrips.value.some(item => item.isQR);
+
+    if (isUsedPlatform) {
+        const response = await fetch("/shablons/color.txt")
+        let textOfCode = await response.text()
+        textOfCode = textOfCode.split('<<separator>>')
+        colorDetectClass.value = textOfCode[0]
+        colorDetectCode.value += `\t${textOfCode[1].trim()}\n`;
     }
-    fetch("/shablons/emergency_and_navigate.txt")
-        .then((response) => response.text())
-        .then((textOfCode) => {
-            finallyText = textOfCode.replace("<<navigate_wait>>", navigate_waites);
-        });
+
+    if (isUsedQR) {
+        const response = await fetch("/shablons/qr.txt")
+        let textOfCode = await response.text()
+        textOfCode = textOfCode.split('<<separator>>')
+        QRDetectClass.value = textOfCode[0]
+        QRDetectCode.value += `\t${textOfCode[1].trim()}\n`;
+    }
+
+    for (const item of listOfTrips.value) {
+        mainCode.value += `\tnavigate_wait(${item.x}, ${item.y})\n`;
+        if (item.isPlatform) {
+            mainCode.value += colorDetectCode.value + '\n'
+        }
+        if (item.isQR) {
+            mainCode.value += QRDetectCode.value + '\n'
+        }
+    }
+    const response = await fetch("/shablons/emergency_and_navigate.txt")
+    let textOfCode = await response.text()
+    finallyText.value = textOfCode.replace("<<main>>", mainCode.value);
+    if (isUsedPlatform) {
+        finallyText.value = finallyText.value.replace("<<ColorDetect>>", colorDetectClass.value);
+    } else {
+        finallyText.value = finallyText.value.replace("<<ColorDetect>>", '');
+    }
+    if (isUsedQR) {
+        finallyText.value = finallyText.value.replace("<<qr_function>>", QRDetectClass.value);
+    } else {
+        finallyText.value = finallyText.value.replace("<<qr_function>>", '');
+    }
     isModalVisible.value = true;
 }
 
 function cancel() {
-    numbers.value[listOfTrips.value.at(-1).index].variable.pop();
-    listOfTrips.value.pop();
-
     if (clickCount.value === 1) {
         return;
-    } else {
-        clickCount.value--;
     }
+    listOfTrips.value.at(-1).variable.pop();
+    listOfTrips.value.pop();
+    clickCount.value--;
 }
 
 function cleanResult() {
     clickCount.value = 1;
-    numbers.value = [];
+    listOfTrips.value.forEach(item => {
+        item.isPlatform = false;
+        item.isQR = false;
+        item.variable = [];
+        item.BgImg = 'images/ArUco-marker.jpg'
+    })
     listOfTrips.value = [];
-    for (let i = 0; i < 100; i++) {
-        numbers.value.push({
-            variable: [],
-            x: i % 10,
-            y: 9 - Math.floor(i / 10),
-            index: i,
-        });
-    }
 }
 
 // Обрабатываем нажатие Ctrl + Z
@@ -102,10 +139,9 @@ function copyAndToast(text) {
 }
 
 function handleDownloadBtn() {
-    console.log(finallyText)
     // Создание файла
     const downloadUrl = ref('');
-    const blob = new Blob([finallyText], {type: 'text/plain'});
+    const blob = new Blob([finallyText.value], {type: 'text/plain'});
     downloadUrl.value = URL.createObjectURL(blob);
     // Задержка для избежания ошибок в некоторых браузерах
     setTimeout(() => {
@@ -124,18 +160,134 @@ function handleDownloadBtn() {
     })
     isModalVisible.value = false
 }
+
+function createPlatform(item, color) {
+    if (!item.variable.length) {
+        item.variable.push(clickCount.value);
+        listOfTrips.value.push(item)
+        clickCount.value++
+    }
+    item.isPlatform = true;
+    item.isQR = false;
+    item.BgImg = `images/${color}-platform.jpg`
+}
+
+function deletePlatform(item) {
+    item.BgImg = 'images/ArUco-marker.jpg'
+    item.isPlatform = false
+}
+
+function createQR(item) {
+    if (!item.variable.length) {
+        item.variable.push(clickCount.value);
+        listOfTrips.value.push(item)
+        clickCount.value++
+    }
+    item.isPlatform = false;
+    item.isQR = true;
+    item.BgImg = `images/qr.jpg`
+}
+
+function deleteQR(item) {
+    item.BgImg = 'images/ArUco-marker.jpg'
+    item.isQR = true
+}
+
+function deletePointMap(item) {
+    const index = listOfTrips.value.indexOf(item);
+    if (index !== -1) {
+        const deletedIndex = item.variable.at(-1)
+        listOfTrips.value.forEach(square => {
+            square.variable.map(itemVariable => {
+                if (itemVariable === deletedIndex) {
+                    square.variable = []
+                }
+                if (itemVariable > deletedIndex) {
+                    square.variable[square.variable.indexOf(itemVariable)]--
+                }
+            })
+        })
+        listOfTrips.value.splice(index, 1);
+        clickCount.value--
+        item.isQR = false
+        item.isPlatform = false
+        item.BgImg = 'images/ArUco-marker.jpg'
+    }
+}
+function createIcon(src) {
+    return h('img', {
+        src: src,
+        style: {
+            width: '20px',
+            height: '20px',
+        }
+    })
+}
+function onContextMenu(e, item) {
+    ContextMenu.showContextMenu({
+        theme: 'mac dark',
+        x: e.x,
+        y: e.y,
+        items: [
+            {
+                label: "Платформа",
+                icon: createIcon('icons/base_square.webp'),
+                children: [
+                    {
+                        label: "Белая",
+                        onClick: () => createPlatform(item, 'white'),
+                        icon: createIcon('icons/white_square.webp'),
+                    },
+                    {
+                        label: "Синяя",
+                        onClick: () => createPlatform(item, 'blue'),
+                        icon: createIcon('icons/blue_square.webp'),
+                    },
+                    {
+                        label: "Красная",
+                        onClick: () => createPlatform(item, 'red'),
+                        icon: createIcon('icons/red_square.webp'),
+                    },
+                    {
+                        label: "Удалить",
+                        onClick: () => deletePlatform(item),
+                        icon: createIcon('icons/trash.webp'),
+                    },
+                ]
+            },
+            {
+                label: "QR код",
+                icon: createIcon('icons/qr_code.png'),
+                children: [
+                    {
+                        label: "Добавить",
+                        onClick: () => createQR(item),
+                        icon: createIcon('icons/plus.webp')
+                    },
+                    {
+                        label: "Удалить",
+                        onClick: () => deleteQR(item),
+                        icon: createIcon('icons/trash.webp')
+
+                    },
+                ],
+            },
+            {
+                label: "Удалить",
+                icon: createIcon('icons/trash.webp'),
+                onClick: () => deletePointMap(item),
+            },
+        ]
+    });
+}
 </script>
 
 <template>
     <div class="wraper">
         <div class="grid">
-            <div
-                class="square"
-                v-for="(item, index) in numbers"
-                :data-key="index"
-                :key="index"
-                @click="setNumber(item)"
-            >
+            <div class="square" v-for="(item, index) in numbers" :data-key="index" :key="index"
+                 @click="setNumber(item)" @contextmenu.prevent="onContextMenu($event, item)"
+                 :style="{backgroundImage: `url(${item.BgImg})`}">
                 {{ numbers[index].variable.join(", ") }}
             </div>
         </div>
@@ -149,12 +301,8 @@ function handleDownloadBtn() {
     </div>
 
 
-    <MyDialog
-        v-show="isModalVisible"
-        @close="isModalVisible = false"
-        class="dialogWindow"
-        :is-success=listOfTrips.length
-    >
+    <MyDialog v-show="isModalVisible" @close="isModalVisible = false" class="dialogWindow"
+              :is-success=Boolean(listOfTrips.length)>
         <template #header>
             <strong v-if="listOfTrips.length">Код готов!</strong>
             <strong v-else>Код не готов!</strong>
@@ -165,9 +313,9 @@ function handleDownloadBtn() {
         </template>
         <template #footer>
             <div v-if="listOfTrips.length">
-                <button type="button" @click="handleDownloadBtn">Скачать код</button>
-                <button type="button" @click="copyAndToast(finallyText)">Скопировать код</button>
-                <button type="button" @click="isModalVisible = false">ОК</button>
+                <button @click="handleDownloadBtn">Скачать код</button>
+                <button @click="copyAndToast(finallyText)">Скопировать код</button>
+                <button @click="isModalVisible = false">ОК</button>
             </div>
         </template>
     </MyDialog>
@@ -196,14 +344,11 @@ html {
 }
 
 .square {
-    width: var(--side); /* Ширина квадрата */
-    height: var(--side); /* Высота квадрата */
-    background-image: url("images/image.jpg");
+    width: var(--side);
+    height: var(--side);
     background-size: cover;
     border: 3px solid rgb(251, 251, 251);
-    background-color: #e0e0e0;
     cursor: pointer;
-    transition: background-color 0.3s;
     overflow-y: scroll;
 
     background-blend-mode: multiply;
@@ -211,6 +356,7 @@ html {
     transition: background-color 0.3s ease;
 
     color: white;
+    font-size: 18px;
     text-shadow: -1px -1px 0 black,
     1px -1px 0 black,
     -1px 1px 0 black,

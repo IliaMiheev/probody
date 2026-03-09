@@ -1,5 +1,5 @@
 <script setup>
-import {ref, onMounted} from "vue";
+import {ref, onMounted, h} from "vue";
 import izitoast from "./shared/izitoast";
 import {useEventListener} from "@vueuse/core";
 import MyDialog from "./components/MyDialog.vue";
@@ -214,7 +214,15 @@ function deletePointMap(item) {
         item.BgImg = 'images/ArUco-marker.jpg'
     }
 }
-
+function createIcon(src) {
+    return h('img', {
+        src: src,
+        style: {
+            width: '20px',
+            height: '20px',
+        }
+    })
+}
 function onContextMenu(e, item) {
     ContextMenu.showContextMenu({
         theme: 'mac dark',
@@ -222,41 +230,51 @@ function onContextMenu(e, item) {
         y: e.y,
         items: [
             {
-                label: "Платформы",
+                label: "Платформа",
+                icon: createIcon('icons/base_square.webp'),
                 children: [
                     {
                         label: "Белая",
                         onClick: () => createPlatform(item, 'white'),
+                        icon: createIcon('icons/white_square.webp'),
                     },
                     {
                         label: "Синяя",
                         onClick: () => createPlatform(item, 'blue'),
+                        icon: createIcon('icons/blue_square.webp'),
                     },
                     {
                         label: "Красная",
                         onClick: () => createPlatform(item, 'red'),
+                        icon: createIcon('icons/red_square.webp'),
                     },
                     {
                         label: "Удалить",
                         onClick: () => deletePlatform(item),
+                        icon: createIcon('icons/trash.webp'),
                     },
                 ]
             },
             {
                 label: "QR код",
+                icon: createIcon('icons/qr_code.png'),
                 children: [
                     {
                         label: "Добавить",
-                        onClick: () => createQR(item)
+                        onClick: () => createQR(item),
+                        icon: createIcon('icons/plus.webp')
                     },
                     {
                         label: "Удалить",
-                        onClick: () => deleteQR(item)
+                        onClick: () => deleteQR(item),
+                        icon: createIcon('icons/trash.webp')
+
                     },
                 ],
             },
             {
                 label: "Удалить",
+                icon: createIcon('icons/trash.webp'),
                 onClick: () => deletePointMap(item),
             },
         ]

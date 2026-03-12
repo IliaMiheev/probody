@@ -1,11 +1,12 @@
 <script setup>
 import {ref, onMounted, h} from "vue";
-import izitoast from "./shared/izitoast";
+import izitoast from "@/shared/izitoast";
 import {useEventListener} from "@vueuse/core";
-import MyDialog from "./components/MyDialog.vue";
-import MyDropMenu from "./components/MyDropMenu.vue";
-import copyToclipboard from "./shared/copyToclipboard";
+import MyDialog from "@/components/MyDialog.vue";
+import MyDropMenu from "@/components/MyDropMenu.vue";
+import copyToclipboard from "@/shared/copyToclipboard";
 import ContextMenu from "@imengyu/vue3-context-menu";
+import CustomButton from '@/components/UI/CustomButton.vue'
 
 const numbers = ref([]); // Инициализируем массив с пустыми строками
 const clickCount = ref(1); // Счетчик нажатий
@@ -214,6 +215,7 @@ function deletePointMap(item) {
         item.BgImg = 'images/ArUco-marker.jpg'
     }
 }
+
 function createIcon(src) {
     return h('img', {
         src: src,
@@ -223,6 +225,7 @@ function createIcon(src) {
         }
     })
 }
+
 function onContextMenu(e, item) {
     ContextMenu.showContextMenu({
         theme: 'mac dark',
@@ -293,24 +296,27 @@ function onContextMenu(e, item) {
         </div>
 
         <div class="actions">
-            <button @click="saveResult">Сохранить</button>
-            <button @click="cleanResult">Очистить</button>
-            <button @click="cancel">Отменить</button>
+            <custom-button class="actions__btn">Сохранить</custom-button>
+            <custom-button class="actions__btn" @click="cleanResult">Очистить</custom-button>
+            <custom-button class="actions__btn" @click="cancel">Отменить</custom-button>
         </div>
         <MyDropMenu/>
     </div>
 
 
-    <MyDialog v-show="isModalVisible" @close="isModalVisible = false" class="dialogWindow"
-              :is-success=Boolean(listOfTrips.length)>
+    <MyDialog
+        v-model:show="isModalVisible"
+        class="dialogWindow"
+        :is-success=Boolean(listOfTrips.length)
+    >
         <template #header>
             <strong v-if="listOfTrips.length">Код готов!</strong>
             <strong v-else>Код не готов!</strong>
         </template>
-        <template #body>
+        <main>
             <p v-if="listOfTrips.length">Скопируйте или скачайте ваш код</p>
             <p v-else>Выстройте маршрут перед сохранением кода.</p>
-        </template>
+        </main>
         <template #footer>
             <div v-if="listOfTrips.length">
                 <button @click="handleDownloadBtn">Скачать код</button>
@@ -324,6 +330,7 @@ function onContextMenu(e, item) {
 <style>
 html {
     background-image: radial-gradient(#383838e2, #222222);
+    font-size: 18px;
 }
 
 :root {
@@ -356,7 +363,6 @@ html {
     transition: background-color 0.3s ease;
 
     color: white;
-    font-size: 18px;
     text-shadow: -1px -1px 0 black,
     1px -1px 0 black,
     -1px 1px 0 black,
@@ -380,19 +386,16 @@ html {
 }
 
 .actions {
-    margin-left: 10px;
+    margin: 3px 0 0 10px;
+
     display: flex;
     flex-direction: column;
+    gap: 10px;
+    width: 150px;
 }
 
 .actions button {
-    border: 2px solid rgb(251, 251, 251);
-    padding: 15px 30px;
-    font-size: 15px;
-    background-color: #383838;
-    color: white;
-    cursor: pointer;
-    margin: 5px;
-    transition: 0.3s;
+    padding: 20px 35px;
+    //background-color: red;
 }
 </style>

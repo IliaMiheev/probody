@@ -1,21 +1,22 @@
 <template>
     <transition name="modal-fade">
-        <div class="modal-backdrop" @click="closeModal">
+        <div class="modal-backdrop" v-if="show" @click.stop="$emit('update:show', false)">
             <div class="modal" @click.stop>
                 <header :class="['modal-header', isSuccess ? 'modal-header-success': 'modal-header-error']">
                     <slot name="header">
                         <strong>Заголовок по умолчанию</strong>
                     </slot>
-                    <button class="modal-btn-close" @click="closeModal" aria-label="Закрыть модальное окно">
+                    <button class="modal-btn-close" @click.stop="$emit('update:show', false)"
+                            aria-label="Закрыть модальное окно">
                         ×
                     </button>
                 </header>
                 <section class="modal-body">
-                    <slot name="body">Тело по умолчанию</slot>
+                    <slot>Тело по умолчанию</slot>
                 </section>
                 <footer :class="['modal-footer', isSuccess ? 'modal-footer-success': 'modal-footer-error']">
                     <slot name="footer">
-                        <button @click="closeModal">Закрыть</button>
+                        <button @click.stop="$emit('update:show', false)">Закрыть</button>
                     </slot>
                 </footer>
             </div>
@@ -24,17 +25,16 @@
 </template>
 
 <script setup>
-const emit = defineEmits(['close'])
 const props = defineProps({
     isSuccess: {
         type: Boolean,
         required: true
+    },
+    show: {
+        type: Boolean,
+        default: false
     }
 })
-
-function closeModal() {
-    emit('close');
-}
 </script>
 
 <style>
@@ -48,6 +48,7 @@ function closeModal() {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 501;
 }
 
 .modal {

@@ -296,7 +296,7 @@ function onContextMenu(e, item) {
         </div>
 
         <div class="actions">
-            <custom-button class="actions__btn">Сохранить</custom-button>
+            <custom-button class="actions__btn" @click="saveResult">Сохранить</custom-button>
             <custom-button class="actions__btn" @click="cleanResult">Очистить</custom-button>
             <custom-button class="actions__btn" @click="cancel">Отменить</custom-button>
         </div>
@@ -396,6 +396,6 @@ html {
 
 .actions button {
     padding: 20px 35px;
-    //background-color: red;
+   /* background-color: red; */
 }
 </style>

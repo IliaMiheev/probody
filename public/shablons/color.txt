@@ -34,7 +34,7 @@ def color_detection(data, print_type='str'):
             color = 'green'
         elif r > b + 20 and r > g + 20 and r > 100:  
             color = 'red'
-        elif r > 150 and g > 150 and g > 150:
+        elif r > 150 and g > 150 and b > 150:
             color= 'white'
         else:
             color = None

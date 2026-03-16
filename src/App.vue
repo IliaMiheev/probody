@@ -1,7 +1,7 @@
 <script setup>
-import {ref, onMounted, h} from "vue";
+import { ref, onMounted, h } from "vue";
 import izitoast from "@/shared/izitoast";
-import {useEventListener} from "@vueuse/core";
+import { useEventListener } from "@vueuse/core";
 import MyDialog from "@/components/MyDialog.vue";
 import MyDropMenu from "@/components/MyDropMenu.vue";
 import copyToclipboard from "@/shared/copyToclipboard";
@@ -112,7 +112,7 @@ function cancel() {
 
 function cleanResult() {
     clickCount.value = 1;
-    listOfTrips.value.forEach(item => {
+    numbers.value.forEach(item => {
         item.isPlatform = false;
         item.isQR = false;
         item.variable = [];
@@ -142,7 +142,7 @@ function copyAndToast(text) {
 function handleDownloadBtn() {
     // Создание файла
     const downloadUrl = ref('');
-    const blob = new Blob([finallyText.value], {type: 'text/plain'});
+    const blob = new Blob([finallyText.value], { type: 'text/plain' });
     downloadUrl.value = URL.createObjectURL(blob);
     // Задержка для избежания ошибок в некоторых браузерах
     setTimeout(() => {
@@ -174,8 +174,10 @@ function createPlatform(item, color) {
 }
 
 function deletePlatform(item) {
-    item.BgImg = 'images/ArUco-marker.jpg'
-    item.isPlatform = false
+    if (item.isPlatform) {
+        item.BgImg = 'images/ArUco-marker.jpg'
+        item.isPlatform = false
+    }
 }
 
 function createQR(item) {
@@ -190,8 +192,10 @@ function createQR(item) {
 }
 
 function deleteQR(item) {
-    item.BgImg = 'images/ArUco-marker.jpg'
-    item.isQR = true
+    if (item.isQR) {
+        item.BgImg = 'images/ArUco-marker.jpg'
+        item.isQR = false
+    }
 }
 
 function deletePointMap(item) {
@@ -288,9 +292,8 @@ function onContextMenu(e, item) {
 <template>
     <div class="wraper">
         <div class="grid">
-            <div class="square" v-for="(item, index) in numbers" :data-key="index" :key="index"
-                 @click="setNumber(item)" @contextmenu.prevent="onContextMenu($event, item)"
-                 :style="{backgroundImage: `url(${item.BgImg})`}">
+            <div class="square" v-for="(item, index) in numbers" :data-key="index" :key="index" @click="setNumber(item)"
+                @contextmenu.prevent="onContextMenu($event, item)" :style="{ backgroundImage: `url(${item.BgImg})` }">
                 {{ numbers[index].variable.join(", ") }}
             </div>
         </div>
@@ -300,15 +303,11 @@ function onContextMenu(e, item) {
             <custom-button class="actions__btn" @click="cleanResult">Очистить</custom-button>
             <custom-button class="actions__btn" @click="cancel">Отменить</custom-button>
         </div>
-        <MyDropMenu/>
+        <MyDropMenu />
     </div>
 
 
-    <MyDialog
-        v-model:show="isModalVisible"
-        class="dialogWindow"
-        :is-success=Boolean(listOfTrips.length)
-    >
+    <MyDialog v-model:show="isModalVisible" class="dialogWindow" :is-success=Boolean(listOfTrips.length)>
         <template #header>
             <strong v-if="listOfTrips.length">Код готов!</strong>
             <strong v-else>Код не готов!</strong>
@@ -328,13 +327,17 @@ function onContextMenu(e, item) {
 </template>
 
 <style>
+* {
+    font-family: 'Courier New', Courier, monospace;
+}
+
 html {
-    background-image: radial-gradient(#383838e2, #222222);
+    background-image: radial-gradient(#23aae3e2, #222222);
     font-size: 18px;
 }
 
 :root {
-    --side: 70px;
+    --side: 75px;
 }
 
 .wraper {
@@ -346,7 +349,7 @@ html {
     display: grid;
     padding: 3px;
     grid-template-columns: repeat(10, var(--side));
-    gap: 10px;
+    gap: 5px;
     user-select: none;
 }
 
@@ -364,9 +367,10 @@ html {
 
     color: white;
     text-shadow: -1px -1px 0 black,
-    1px -1px 0 black,
-    -1px 1px 0 black,
-    1px 1px 0 black;
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black;
+    box-sizing: border-box;
 }
 
 .square:hover {
@@ -396,6 +400,6 @@ html {
 
 .actions button {
     padding: 20px 35px;
-   /* background-color: red; */
+    /* background-color: red; */
 }
 </style>

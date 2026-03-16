@@ -13,11 +13,11 @@ const props = defineProps({
 </script>
 
 <template>
-    <a v-if="to" :href="props.to" class="btn">
-        <slot/>
+    <a v-if="to" :href="props.to" target="_blank" class="btn">
+        <slot />
     </a>
     <button v-else class="btn">
-        <slot/>
+        <slot />
     </button>
 </template>
 
@@ -31,5 +31,11 @@ const props = defineProps({
     color: white;
     width: 100%;
     font-size: 17px;
+
+    text-decoration: none;
+    box-sizing: border-box;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
 }
 </style>

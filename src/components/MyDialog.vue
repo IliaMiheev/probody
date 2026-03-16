@@ -2,19 +2,19 @@
     <transition name="modal-fade">
         <div class="modal-backdrop" v-if="show" @click.stop="$emit('update:show', false)">
             <div class="modal" @click.stop>
-                <header :class="['modal-header', isSuccess ? 'modal-header-success': 'modal-header-error']">
+                <header :class="['modal-header', isSuccess ? 'modal-header-success' : 'modal-header-error']">
                     <slot name="header">
                         <strong>Заголовок по умолчанию</strong>
                     </slot>
                     <button class="modal-btn-close" @click.stop="$emit('update:show', false)"
-                            aria-label="Закрыть модальное окно">
+                        aria-label="Закрыть модальное окно">
                         ×
                     </button>
                 </header>
                 <section class="modal-body">
                     <slot>Тело по умолчанию</slot>
                 </section>
-                <footer :class="['modal-footer', isSuccess ? 'modal-footer-success': 'modal-footer-error']">
+                <footer :class="['modal-footer', isSuccess ? 'modal-footer-success' : 'modal-footer-error']">
                     <slot name="footer">
                         <button @click.stop="$emit('update:show', false)">Закрыть</button>
                     </slot>
@@ -38,6 +38,10 @@ const props = defineProps({
 </script>
 
 <style>
+:root {
+    --successColor: #4ee882
+}
+
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -74,7 +78,7 @@ const props = defineProps({
 }
 
 .modal-header-success {
-    color: #4AAE9B;
+    color: var(--successColor);
 }
 
 .modal-header-error {
@@ -89,17 +93,18 @@ const props = defineProps({
 .modal-footer {
     justify-content: flex-end;
     border-top: 1px solid white;
+
 }
 
 .modal-footer button {
     justify-content: flex-end;
     border-top: 1px solid white;
     padding: 5px;
-    color: white;
+    color: rgb(0, 0, 0);
 }
 
 .modal-footer-success button {
-    background-color: #4AAE9B;
+    background-color: var(--successColor);
     border: none;
     margin: 3px;
 }
@@ -124,4 +129,4 @@ const props = defineProps({
     color: red;
     background: transparent;
 }
-</style>   
+</style>

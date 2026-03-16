@@ -1,12 +1,7 @@
 <template>
     <div class="navigation-wrapper">
         <!-- Кнопка Бургер -->
-        <button
-            class="burger-btn"
-            @click="toggleMenu"
-            :class="{ 'is-active': isOpen }"
-            aria-label="Menu"
-        >
+        <button class="burger-btn" @click="toggleMenu" :class="{ 'is-active': isOpen }" aria-label="Menu">
             <span class="line"></span>
             <span class="line"></span>
             <span class="line"></span>
@@ -29,10 +24,7 @@
                 </nav>
             </aside>
         </transition>
-        <MyDialog
-            isSuccess
-            v-model:show="isModalVisible"
-        >
+        <MyDialog isSuccess v-model:show="isModalVisible">
             <template #header>
                 <strong>{{ infoCard.title }}</strong>
             </template>
@@ -40,16 +32,18 @@
                 <p>{{ infoCard.body }}</p>
             </main>
             <template #footer>
-                <custom-button title="Посмотреть на stepike">Курс</custom-button>
-                <custom-button title="Посмотреть в официальной документации">Документация</custom-button>
-                <custom-button>ОК</custom-button>
+                <div class="navigation-wrapper__footer">
+                    <custom-button :to="infoCard.hrefToCourse" title="Посмотреть на Stepik">Курс</custom-button>
+                    <custom-button :to="infoCard.hrefToDoc" title="Посмотреть в официальной документации">Документация</custom-button>
+                    <custom-button @click="isModalVisible = false">ОК</custom-button>
+                </div>
             </template>
         </MyDialog>
     </div>
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import { ref } from 'vue';
 import MyDialog from "@/components/MyDialog.vue";
 import CustomButton from '@/components/UI/CustomButton.vue'
 
@@ -73,9 +67,9 @@ function openInfoCard(obj) {
 const links = [
     {
         title: 'Что такое ROS?',
-        body: 'ROS — переводится как robot operation system',
-        hrefToDoc: 'https://clover.coex.tech/ru/simple_offboard.html',
-        hrefToCourse: 'https://stepic.org'
+        body: 'ROS (Robot Operating System) — экосистема для программирования роботов с открытым исходным кодом',
+        hrefToDoc: 'https://www.ros.org/',
+        hrefToCourse: 'https://stepik.org/lesson/2260739/step/1?unit=2294748'
     },
     {
         title: '2',
@@ -134,15 +128,17 @@ const links = [
 ]
 
 // Экспортируем методы, если захотим управлять меню извне
-defineExpose({open: () => (isOpen.value = true), close: closeMenu});
+defineExpose({ open: () => (isOpen.value = true), close: closeMenu });
 </script>
 
 <style scoped>
 .burger-btn {
-    position: fixed; /* Она всегда на одном месте при скролле */
+    position: fixed;
+    /* Она всегда на одном месте при скролле */
     top: 20px;
     left: 20px;
-    z-index: 9999; /* Максимальный приоритет, чтобы быть ПОВЕРХ всего */
+    z-index: 9999;
+    /* Максимальный приоритет, чтобы быть ПОВЕРХ всего */
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -158,10 +154,17 @@ h1 {
     text-align: center;
 }
 
+.menu-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 .line {
     width: 100%;
     height: 4px;
-    background-color: #383838; /* Ярко-красный цвет для теста */
+    background-color: #383838;
+    /* Ярко-красный цвет для теста */
     transition: all 0.3s ease;
 }
 
@@ -185,7 +188,8 @@ h1 {
     left: 0;
     width: 240px;
     height: 100%;
-    background: white;
+    background-image: radial-gradient(#23aae3e2, #222222);
+    color: white;
     z-index: 1000;
     padding: 0 20px 20px;
     overflow-y: scroll;
@@ -199,22 +203,35 @@ h1 {
     width: 100vw;
     height: 100vh;
     z-index: 2;
+    background-color: #333333;
+    opacity: 90%;
+    display: flex;
+}
+
+.navigation-wrapper__footer {
+    display: flex;
+    gap: 10px;
+    width: 100%;
 }
 
 /* Анимации появления */
-.slide-enter-active, .slide-leave-active {
+.slide-enter-active,
+.slide-leave-active {
     transition: transform 0.3s ease;
 }
 
-.slide-enter-from, .slide-leave-to {
+.slide-enter-from,
+.slide-leave-to {
     transform: translateX(-100%);
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
     transition: opacity 0.3s ease;
 }
 
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
     opacity: 0;
 }
 </style>

@@ -9,7 +9,6 @@ const props = defineProps({
         default: null
     }
 })
-
 </script>
 
 <template>
@@ -31,11 +30,14 @@ const props = defineProps({
     color: white;
     width: 100%;
     font-size: 17px;
-
     text-decoration: none;
     box-sizing: border-box;
     text-align: center;
     font-family: 'Courier New', Courier, monospace;
     margin: 0;
+}
+
+.success {
+    background-color: var(--successColor);
 }
 </style>

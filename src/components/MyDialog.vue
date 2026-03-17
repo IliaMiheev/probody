@@ -28,7 +28,7 @@
 const props = defineProps({
     isSuccess: {
         type: Boolean,
-        required: true
+        default: true,
     },
     show: {
         type: Boolean,

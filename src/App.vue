@@ -105,6 +105,9 @@ function cancel() {
     if (clickCount.value === 1) {
         return;
     }
+    if (listOfTrips.value.at(-1).variable.length === 1) {
+        listOfTrips.value.at(-1).BgImg = 'images/ArUco-marker.jpg'
+    }
     listOfTrips.value.at(-1).variable.pop();
     listOfTrips.value.pop();
     clickCount.value--;

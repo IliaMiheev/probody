@@ -7,12 +7,14 @@ import MyDropMenu from "@/components/MyDropMenu.vue";
 import copyToclipboard from "@/shared/copyToclipboard";
 import ContextMenu from "@imengyu/vue3-context-menu";
 import CustomButton from '@/components/UI/CustomButton.vue'
+import CodeView from "@/components/CodeView.vue";
 
 const numbers = ref([]); // Инициализируем массив с пустыми строками
 const clickCount = ref(1); // Счетчик нажатий
 const listOfTrips = ref([]);
 const isModalVisible = ref(false);
-let finallyText = ref("");
+const isCodeViewVisible = ref(false);
+const finallyText = ref("");
 
 onMounted(() => {
     for (let i = 0; i < 100; i++) {
@@ -293,7 +295,7 @@ function onContextMenu(e, item) {
 </script>
 
 <template>
-    <div class="wraper">
+    <div v-if="!isCodeViewVisible" class="wraper">
         <div class="grid">
             <div class="square" v-for="(item, index) in numbers" :data-key="index" :key="index" @click="setNumber(item)"
                 @contextmenu.prevent="onContextMenu($event, item)" :style="{ backgroundImage: `url(${item.BgImg})` }">
@@ -302,31 +304,32 @@ function onContextMenu(e, item) {
         </div>
 
         <div class="actions">
-            <custom-button class="actions__btn" @click="saveResult">Сохранить</custom-button>
-            <custom-button class="actions__btn" @click="cleanResult">Очистить</custom-button>
-            <custom-button class="actions__btn" @click="cancel">Отменить</custom-button>
+            <custom-button @click="saveResult">Сохранить</custom-button>
+            <custom-button @click="cleanResult">Очистить</custom-button>
+            <custom-button @click="cancel">Отменить</custom-button>
         </div>
         <MyDropMenu />
+        <MyDialog v-model:show="isModalVisible" class="dialogWindow" :is-success=Boolean(listOfTrips.length)>
+            <template #header>
+                <strong v-if="listOfTrips.length">Код готов!</strong>
+                <strong v-else>Код не готов!</strong>
+            </template>
+            <main>
+                <p v-if="listOfTrips.length">Скопируйте или скачайте ваш код</p>
+                <p v-else>Выстройте маршрут перед сохранением кода.</p>
+            </main>
+            <template #footer>
+                <div v-if="listOfTrips.length">
+                    <button @click="handleDownloadBtn">Скачать код</button>
+                    <button @click="isCodeViewVisible = true">Предпросмотр</button>
+                    <button @click="copyAndToast(finallyText)">Скопировать код</button>
+                </div>
+            </template>
+        </MyDialog>
     </div>
+    <CodeView v-model:show="isCodeViewVisible" :code="finallyText" :show="isCodeViewVisible"/>
 
 
-    <MyDialog v-model:show="isModalVisible" class="dialogWindow" :is-success=Boolean(listOfTrips.length)>
-        <template #header>
-            <strong v-if="listOfTrips.length">Код готов!</strong>
-            <strong v-else>Код не готов!</strong>
-        </template>
-        <main>
-            <p v-if="listOfTrips.length">Скопируйте или скачайте ваш код</p>
-            <p v-else>Выстройте маршрут перед сохранением кода.</p>
-        </main>
-        <template #footer>
-            <div v-if="listOfTrips.length">
-                <button @click="handleDownloadBtn">Скачать код</button>
-                <button @click="copyAndToast(finallyText)">Скопировать код</button>
-                <button @click="isModalVisible = false">ОК</button>
-            </div>
-        </template>
-    </MyDialog>
 </template>
 
 <style>

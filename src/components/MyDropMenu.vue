@@ -36,7 +36,7 @@
                     <custom-button :to="infoCard.hrefToCourse" title="Посмотреть на Stepik">Курс</custom-button>
                     <custom-button :to="infoCard.hrefToDoc"
                         title="Посмотреть в официальной документации">Документация</custom-button>
-                    <custom-button @click="isModalVisible = false">ОК</custom-button>
+                    <custom-button @click="handleOkBtn">ОК</custom-button>
                 </div>
             </template>
         </MyDialog>
@@ -52,6 +52,10 @@ const isOpen = ref(false);
 const isModalVisible = ref(false);
 const infoCard = ref({})
 
+function handleOkBtn() {
+    isModalVisible.value = false
+    isOpen.value = true
+}
 const toggleMenu = () => {
     isOpen.value = !isOpen.value;
 };
@@ -62,6 +66,7 @@ const closeMenu = () => {
 
 function openInfoCard(obj) {
     isModalVisible.value = true
+    isOpen.value = false
     infoCard.value = obj
 }
 
@@ -129,11 +134,9 @@ defineExpose({ open: () => (isOpen.value = true), close: closeMenu });
 <style scoped>
 .burger-btn {
     position: fixed;
-    /* Она всегда на одном месте при скролле */
     top: 20px;
     left: 20px;
-    z-index: 9999;
-    /* Максимальный приоритет, чтобы быть ПОВЕРХ всего */
+    z-index: 3;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -185,7 +188,7 @@ h1 {
     height: 100%;
     background-image: radial-gradient(#23aae3e2, #222222);
     color: white;
-    z-index: 1000;
+    z-index: 2;
     padding: 0 20px 20px;
     overflow-y: scroll;
     overflow: auto;

@@ -52,7 +52,7 @@ const props = defineProps({
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 501;
+    z-index: 999;
 }
 
 .modal {

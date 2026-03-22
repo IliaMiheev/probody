@@ -24,7 +24,7 @@
                 </nav>
             </aside>
         </transition>
-        <MyDialog isSuccess v-model:show="isModalVisible">
+        <MyDialog isSuccess v-model:show="isModalVisible" @close="handleOkBtn">
             <template #header>
                 <strong>{{ infoCard.title }}</strong>
             </template>
@@ -34,8 +34,8 @@
             <template #footer>
                 <div class="navigation-wrapper__footer">
                     <custom-button :to="infoCard.hrefToCourse" title="Посмотреть на Stepik">Курс</custom-button>
-                    <custom-button :to="infoCard.hrefToDoc"
-                        title="Посмотреть в официальной документации">Документация</custom-button>
+                    <custom-button :to="infoCard.hrefToDoc" title="Посмотреть в официальной документации">Документация
+                    </custom-button>
                     <custom-button @click="handleOkBtn">ОК</custom-button>
                 </div>
             </template>
@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 import MyDialog from "@/components/MyDialog.vue";
 import CustomButton from '@/components/UI/CustomButton.vue'
 
@@ -56,6 +56,7 @@ function handleOkBtn() {
     isModalVisible.value = false
     isOpen.value = true
 }
+
 const toggleMenu = () => {
     isOpen.value = !isOpen.value;
 };
@@ -128,7 +129,7 @@ const links = [
 ]
 
 // Экспортируем методы, если захотим управлять меню извне
-defineExpose({ open: () => (isOpen.value = true), close: closeMenu });
+defineExpose({open: () => (isOpen.value = true), close: closeMenu});
 </script>
 
 <style scoped>
@@ -217,7 +218,7 @@ h1 {
 /* Анимации появления */
 .slide-enter-active,
 .slide-leave-active {
-    transition: transform 0.3s ease;
+    transition: transform 0.39s ease;
 }
 
 .slide-enter-from,
@@ -227,7 +228,7 @@ h1 {
 
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.3s ease;
+    transition: opacity 0.39s ease;
 }
 
 .fade-enter-from,

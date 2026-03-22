@@ -16,11 +16,17 @@ console.log(props.code)
 
 <template>
     <div class="code-view" v-if="show">
-        <CustomButton @click.stop="$emit('update:show', false)">Вернуться к сохранению сгенерированного кода</CustomButton>
+        <CustomButton
+            @click.stop="$emit('update:show', false)">
+            Вернуться к сохранению сгенерированного кода
+        </CustomButton>
         <pre>
             {{ code }}
         </pre>
-        <CustomButton @click.stop="$emit('update:show', false)">Вернуться к сохранению сгенерированного кода</CustomButton>
+        <CustomButton
+            @click.stop="$emit('update:show', false)">
+            Вернуться к сохранению сгенерированного кода
+        </CustomButton>
     </div>
 </template>
 
@@ -29,7 +35,6 @@ console.log(props.code)
     position: fixed;
     top: 0;
     left: 0;
-    //background-image: radial-gradient(#23aae3e2, #222222);
     background-color: #222222;
     overflow: auto;
     color: #eeeeee;

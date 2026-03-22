@@ -1,12 +1,12 @@
 <template>
     <transition name="modal-fade">
-        <div class="modal-backdrop" v-if="show" @click.stop="$emit('update:show', false)">
+        <div class="modal-backdrop" v-if="show" @click.stop="onClose">
             <div class="modal" @click.stop>
                 <header :class="['modal-header', isSuccess ? 'modal-header-success' : 'modal-header-error']">
                     <slot name="header">
                         <strong>Заголовок по умолчанию</strong>
                     </slot>
-                    <button class="modal-btn-close" @click.stop="$emit('update:show', false)"
+                    <button class="modal-btn-close" @click.stop="onClose"
                         aria-label="Закрыть модальное окно">
                         ×
                     </button>
@@ -16,7 +16,7 @@
                 </section>
                 <footer :class="['modal-footer', isSuccess ? 'modal-footer-success' : 'modal-footer-error']">
                     <slot name="footer">
-                        <button @click.stop="$emit('update:show', false)">Закрыть</button>
+                        <button @click.stop="onClose">Закрыть</button>
                     </slot>
                 </footer>
             </div>
@@ -25,7 +25,13 @@
 </template>
 
 <script setup>
-const props = defineProps({
+import {defineEmits} from 'vue'
+
+const emit = defineEmits({
+    close: null,
+    'update:show': false,
+})
+defineProps({
     isSuccess: {
         type: Boolean,
         default: true,
@@ -35,6 +41,11 @@ const props = defineProps({
         default: false
     }
 })
+
+function onClose() {
+    emit('update:show')
+    emit('close')
+}
 </script>
 
 <style>
@@ -128,5 +139,33 @@ const props = defineProps({
     font-weight: bold;
     color: red;
     background: transparent;
+}
+
+/* Начало появления: ниже и прозрачный */
+.modal-fade-enter-from {
+    opacity: 0;
+    transform: translateY(20px);
+}
+/* Конец появления: на месте и видим */
+.modal-fade-enter-to {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* Начало исчезания: на месте и видим */
+.modal-fade-leave-from {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* Конец исчезания: выше и прозрачный */
+.modal-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+/* Общие настройки анимации (скорость + плавность) */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+    transition: transform 0.7s cubic-bezier(.22,.9,.31,1), opacity 0.7s ease;
+    will-change: transform, opacity;
 }
 </style>

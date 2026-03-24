@@ -342,6 +342,10 @@ html {
     font-size: 18px;
 }
 
+body {
+    margin: 0;
+}
+
 :root {
     --side: 75px;
 }
@@ -349,6 +353,7 @@ html {
 .wraper {
     display: flex;
     justify-content: center;
+    padding-top: 10px;
 }
 
 .grid {

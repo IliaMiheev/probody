@@ -1,6 +1,7 @@
 <script setup>
 import CustomButton from '@/components/UI/CustomButton.vue'
-
+import CodeBlock from "./CodeBlock.vue";
+import MovementButtons from "./MovementButtons.vue";
 const props = defineProps({
     code: {
         required: true,
@@ -20,21 +21,18 @@ console.log(props.code)
             @click.stop="$emit('update:show', false)">
             Вернуться к сохранению сгенерированного кода
         </CustomButton>
-        <pre>
-            {{ code }}
-        </pre>
+        <CodeBlock :code="code" />
+
         <CustomButton
             @click.stop="$emit('update:show', false)">
             Вернуться к сохранению сгенерированного кода
         </CustomButton>
+        <MovementButtons/>
     </div>
 </template>
 
 <style scoped>
 .code-view {
-    position: fixed;
-    top: 0;
-    left: 0;
     background-color: #222222;
     overflow: auto;
     color: #eeeeee;

@@ -2,7 +2,7 @@
 const props = defineProps({
     isSuccess: {
         type: Boolean,
-        required: true
+        required: false
     },
     to: {
         type: String,

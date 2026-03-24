@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+export default `#!/usr/bin/env python3
 
 import rospy
 import time
@@ -102,4 +102,4 @@ def main():
     land() #посадка
 
 if __name__ == "__main__":
-    main()
+    main()`

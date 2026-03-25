@@ -1,7 +1,7 @@
 <script setup>
-import { ref, onMounted, h } from "vue";
+import {ref, onMounted, h} from "vue";
 import izitoast from "@/shared/izitoast";
-import { useEventListener } from "@vueuse/core";
+import {useEventListener} from "@vueuse/core";
 import MyDialog from "@/components/MyDialog.vue";
 import MyDropMenu from "@/components/MyDropMenu.vue";
 import copyToclipboard from "@/shared/copyToclipboard";
@@ -131,6 +131,12 @@ const handleKeydown = (event) => {
     if (event.ctrlKey && event.code === "KeyZ" && listOfTrips.value.length) {
         event.preventDefault();
         cancel();
+    } else if (event.ctrlKey && event.code === "KeyS") {
+        event.preventDefault();
+        saveResult();
+    } else if (event.code === "Delete") {
+        event.preventDefault();
+        cleanResult();
     }
 };
 useEventListener("keydown", handleKeydown);
@@ -147,7 +153,7 @@ function copyAndToast(text) {
 function handleDownloadBtn() {
     // Создание файла
     const downloadUrl = ref('');
-    const blob = new Blob([finallyText.value], { type: 'text/plain' });
+    const blob = new Blob([finallyText.value], {type: 'text/plain'});
     downloadUrl.value = URL.createObjectURL(blob);
     // Задержка для избежания ошибок в некоторых браузерах
     setTimeout(() => {
@@ -298,7 +304,7 @@ function onContextMenu(e, item) {
     <div v-if="!isCodeViewVisible" class="wraper">
         <div class="grid">
             <div class="square" v-for="(item, index) in numbers" :data-key="index" :key="index" @click="setNumber(item)"
-                @contextmenu.prevent="onContextMenu($event, item)" :style="{ backgroundImage: `url(${item.BgImg})` }">
+                 @contextmenu.prevent="onContextMenu($event, item)" :style="{ backgroundImage: `url(${item.BgImg})` }">
                 {{ numbers[index].variable.join(", ") }}
             </div>
         </div>
@@ -308,7 +314,7 @@ function onContextMenu(e, item) {
             <custom-button @click="cleanResult">Очистить</custom-button>
             <custom-button @click="cancel">Отменить</custom-button>
         </div>
-        <MyDropMenu />
+        <MyDropMenu/>
         <MyDialog v-model:show="isModalVisible" class="dialogWindow" :is-success=Boolean(listOfTrips.length)>
             <template #header>
                 <strong v-if="listOfTrips.length">Код готов!</strong>
@@ -320,16 +326,14 @@ function onContextMenu(e, item) {
             </main>
             <template #footer>
                 <div v-if="listOfTrips.length">
-                    <button @click="handleDownloadBtn">Скачать код</button>
                     <button @click="isCodeViewVisible = true">Предпросмотр</button>
+                    <button @click="handleDownloadBtn">Скачать код</button>
                     <button @click="copyAndToast(finallyText)">Скопировать код</button>
                 </div>
             </template>
         </MyDialog>
     </div>
     <CodeView v-model:show="isCodeViewVisible" :code="finallyText" :show="isCodeViewVisible"/>
-
-
 </template>
 
 <style>
@@ -353,7 +357,8 @@ body {
 .wraper {
     display: flex;
     justify-content: center;
-    padding-top: 10px;
+    //padding: 20% 0;
+    //TODO: рассмотреть вариант
 }
 
 .grid {
@@ -378,9 +383,9 @@ body {
 
     color: white;
     text-shadow: -1px -1px 0 black,
-        1px -1px 0 black,
-        -1px 1px 0 black,
-        1px 1px 0 black;
+    1px -1px 0 black,
+    -1px 1px 0 black,
+    1px 1px 0 black;
     box-sizing: border-box;
 }
 

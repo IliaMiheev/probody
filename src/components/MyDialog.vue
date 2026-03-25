@@ -7,7 +7,7 @@
                         <strong>Заголовок по умолчанию</strong>
                     </slot>
                     <button class="modal-btn-close" @click.stop="onClose"
-                        aria-label="Закрыть модальное окно">
+                            aria-label="Закрыть модальное окно">
                         ×
                     </button>
                 </header>
@@ -26,6 +26,7 @@
 
 <script setup>
 import {defineEmits} from 'vue'
+import {useEventListener} from "@vueuse/core";
 
 const emit = defineEmits({
     close: null,
@@ -46,6 +47,13 @@ function onClose() {
     emit('update:show')
     emit('close')
 }
+
+const handleKeydown = (event) => {
+    if (event.code === "Escape") {
+        emit('update:show')
+    }
+}
+useEventListener("keydown", handleKeydown);
 </script>
 
 <style>
@@ -104,14 +112,15 @@ function onClose() {
 .modal-footer {
     justify-content: flex-end;
     border-top: 1px solid white;
-
 }
 
 .modal-footer button {
     justify-content: flex-end;
     border-top: 1px solid white;
     padding: 5px;
-    color: rgb(0, 0, 0);
+    color: black;
+    font-size: 15px;
+    border-radius: 5px;
 }
 
 .modal-footer-success button {
@@ -146,16 +155,19 @@ function onClose() {
     opacity: 0;
     transform: translateY(20px);
 }
+
 /* Конец появления: на месте и видим */
 .modal-fade-enter-to {
     opacity: 1;
     transform: translateY(0);
 }
+
 /* Начало исчезания: на месте и видим */
 .modal-fade-leave-from {
     opacity: 1;
     transform: translateY(0);
 }
+
 /* Конец исчезания: выше и прозрачный */
 .modal-fade-leave-to {
     opacity: 0;
@@ -165,7 +177,7 @@ function onClose() {
 /* Общие настройки анимации (скорость + плавность) */
 .modal-fade-enter-active,
 .modal-fade-leave-active {
-    transition: transform 0.7s cubic-bezier(.22,.9,.31,1), opacity 0.7s ease;
+    transition: transform 0.7s cubic-bezier(.22, .9, .31, 1), opacity 0.7s ease;
     will-change: transform, opacity;
 }
 </style>

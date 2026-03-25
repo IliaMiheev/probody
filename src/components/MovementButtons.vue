@@ -32,16 +32,16 @@ function scrollToBottom() {
     gap: 2px;
     flex-direction: column;
     position: fixed;
-    right: 25px;
+    right: 15px;
     bottom: calc(50% - 50px);
 }
 
 .movement-buttons > button {
     width: auto;
     font-size: 15px;
-    border: 2px solid white;
+    border: 2px solid #d0d0d0;
     color: white;
-    background-color: #23aae3e2;
+    background-color: #383838;
     height: 50px;
 }
 

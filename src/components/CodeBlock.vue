@@ -24,3 +24,9 @@ function highlight() {
 
 onMounted(highlight)
 </script>
+
+<style scoped>
+pre {
+    padding-left: 10px;
+}
+</style>

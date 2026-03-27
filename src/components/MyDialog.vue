@@ -1,21 +1,22 @@
 <template>
     <transition name="modal-fade">
-        <div class="modal-backdrop" @click="closeModal">
+        <div class="modal-backdrop" v-if="show" @click.stop="onClose">
             <div class="modal" @click.stop>
-                <header :class="['modal-header', isSuccess ? 'modal-header-success': 'modal-header-error']">
+                <header :class="['modal-header', isSuccess ? 'modal-header-success' : 'modal-header-error']">
                     <slot name="header">
                         <strong>Заголовок по умолчанию</strong>
                     </slot>
-                    <button class="modal-btn-close" @click="closeModal" aria-label="Закрыть модальное окно">
+                    <button class="modal-btn-close" @click.stop="onClose"
+                            aria-label="Закрыть модальное окно">
                         ×
                     </button>
                 </header>
                 <section class="modal-body">
-                    <slot name="body">Тело по умолчанию</slot>
+                    <slot>Тело по умолчанию</slot>
                 </section>
-                <footer :class="['modal-footer', isSuccess ? 'modal-footer-success': 'modal-footer-error']">
+                <footer :class="['modal-footer', isSuccess ? 'modal-footer-success' : 'modal-footer-error']">
                     <slot name="footer">
-                        <button @click="closeModal">Закрыть</button>
+                        <button @click.stop="onClose">Закрыть</button>
                     </slot>
                 </footer>
             </div>
@@ -24,20 +25,42 @@
 </template>
 
 <script setup>
-const emit = defineEmits(['close'])
-const props = defineProps({
+import {defineEmits} from 'vue'
+import {useEventListener} from "@vueuse/core";
+
+const emit = defineEmits({
+    close: null,
+    'update:show': false,
+})
+defineProps({
     isSuccess: {
         type: Boolean,
-        required: true
+        default: true,
+    },
+    show: {
+        type: Boolean,
+        default: false
     }
 })
 
-function closeModal() {
-    emit('close');
+function onClose() {
+    emit('update:show')
+    emit('close')
 }
+
+const handleKeydown = (event) => {
+    if (event.code === "Escape") {
+        emit('update:show')
+    }
+}
+useEventListener("keydown", handleKeydown);
 </script>
 
 <style>
+:root {
+    --successColor: #4ee882
+}
+
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -48,6 +71,7 @@ function closeModal() {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 998;
 }
 
 .modal {
@@ -73,7 +97,7 @@ function closeModal() {
 }
 
 .modal-header-success {
-    color: #4AAE9B;
+    color: var(--successColor);
 }
 
 .modal-header-error {
@@ -94,11 +118,13 @@ function closeModal() {
     justify-content: flex-end;
     border-top: 1px solid white;
     padding: 5px;
-    color: white;
+    color: black;
+    font-size: 15px;
+    border-radius: 5px;
 }
 
 .modal-footer-success button {
-    background-color: #4AAE9B;
+    background-color: var(--successColor);
     border: none;
     margin: 3px;
 }
@@ -123,4 +149,31 @@ function closeModal() {
     color: red;
     background: transparent;
 }
-</style>   
+
+/* Начало появления: ниже и прозрачный */
+.modal-fade-enter-from {
+    opacity: 0;
+}
+
+/* Конец появления: на месте и видим */
+.modal-fade-enter-to {
+    opacity: 1;
+}
+
+/* Начало исчезания: на месте и видим */
+.modal-fade-leave-from {
+    opacity: 1;
+}
+
+/* Конец исчезания: выше и прозрачный */
+.modal-fade-leave-to {
+    opacity: 0;
+}
+
+/* Общие настройки анимации (скорость + плавность) */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+    transition: transform 0.7s cubic-bezier(.22, .9, .31, 1), opacity 0.7s ease;
+    will-change: transform, opacity;
+}
+</style>

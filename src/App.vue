@@ -1,17 +1,20 @@
 <script setup>
 import {ref, onMounted, h} from "vue";
-import izitoast from "./shared/izitoast";
+import izitoast from "@/shared/izitoast";
 import {useEventListener} from "@vueuse/core";
-import MyDialog from "./components/MyDialog.vue";
-import MyDropMenu from "./components/MyDropMenu.vue";
-import copyToclipboard from "./shared/copyToclipboard";
+import MyDialog from "@/components/MyDialog.vue";
+import MyDropMenu from "@/components/MyDropMenu.vue";
+import copyToclipboard from "@/shared/copyToclipboard";
 import ContextMenu from "@imengyu/vue3-context-menu";
+import CustomButton from '@/components/UI/CustomButton.vue'
+import CodeView from "@/components/CodeView.vue";
 
 const numbers = ref([]); // Инициализируем массив с пустыми строками
 const clickCount = ref(1); // Счетчик нажатий
 const listOfTrips = ref([]);
 const isModalVisible = ref(false);
-let finallyText = ref("");
+const isCodeViewVisible = ref(false);
+const finallyText = ref("");
 
 onMounted(() => {
     for (let i = 0; i < 100; i++) {
@@ -104,6 +107,9 @@ function cancel() {
     if (clickCount.value === 1) {
         return;
     }
+    if (listOfTrips.value.at(-1).variable.length === 1) {
+        listOfTrips.value.at(-1).BgImg = 'images/ArUco-marker.jpg'
+    }
     listOfTrips.value.at(-1).variable.pop();
     listOfTrips.value.pop();
     clickCount.value--;
@@ -111,7 +117,7 @@ function cancel() {
 
 function cleanResult() {
     clickCount.value = 1;
-    listOfTrips.value.forEach(item => {
+    numbers.value.forEach(item => {
         item.isPlatform = false;
         item.isQR = false;
         item.variable = [];
@@ -125,6 +131,12 @@ const handleKeydown = (event) => {
     if (event.ctrlKey && event.code === "KeyZ" && listOfTrips.value.length) {
         event.preventDefault();
         cancel();
+    } else if (event.ctrlKey && event.code === "KeyS") {
+        event.preventDefault();
+        saveResult();
+    } else if (event.code === "Delete") {
+        event.preventDefault();
+        cleanResult();
     }
 };
 useEventListener("keydown", handleKeydown);
@@ -173,8 +185,10 @@ function createPlatform(item, color) {
 }
 
 function deletePlatform(item) {
-    item.BgImg = 'images/ArUco-marker.jpg'
-    item.isPlatform = false
+    if (item.isPlatform) {
+        item.BgImg = 'images/ArUco-marker.jpg'
+        item.isPlatform = false
+    }
 }
 
 function createQR(item) {
@@ -189,8 +203,10 @@ function createQR(item) {
 }
 
 function deleteQR(item) {
-    item.BgImg = 'images/ArUco-marker.jpg'
-    item.isQR = true
+    if (item.isQR) {
+        item.BgImg = 'images/ArUco-marker.jpg'
+        item.isQR = false
+    }
 }
 
 function deletePointMap(item) {
@@ -214,6 +230,7 @@ function deletePointMap(item) {
         item.BgImg = 'images/ArUco-marker.jpg'
     }
 }
+
 function createIcon(src) {
     return h('img', {
         src: src,
@@ -223,6 +240,7 @@ function createIcon(src) {
         }
     })
 }
+
 function onContextMenu(e, item) {
     ContextMenu.showContextMenu({
         theme: 'mac dark',
@@ -283,63 +301,71 @@ function onContextMenu(e, item) {
 </script>
 
 <template>
-    <div class="wraper">
+    <div v-if="!isCodeViewVisible" class="wraper">
         <div class="grid">
-            <div class="square" v-for="(item, index) in numbers" :data-key="index" :key="index"
-                 @click="setNumber(item)" @contextmenu.prevent="onContextMenu($event, item)"
-                 :style="{backgroundImage: `url(${item.BgImg})`}">
+            <div class="square" v-for="(item, index) in numbers" :data-key="index" :key="index" @click="setNumber(item)"
+                 @contextmenu.prevent="onContextMenu($event, item)" :style="{ backgroundImage: `url(${item.BgImg})` }">
                 {{ numbers[index].variable.join(", ") }}
             </div>
         </div>
 
         <div class="actions">
-            <button @click="saveResult">Сохранить</button>
-            <button @click="cleanResult">Очистить</button>
-            <button @click="cancel">Отменить</button>
+            <custom-button @click="saveResult">Сохранить</custom-button>
+            <custom-button @click="cleanResult">Очистить</custom-button>
+            <custom-button @click="cancel">Отменить</custom-button>
         </div>
         <MyDropMenu/>
+        <MyDialog v-model:show="isModalVisible" class="dialogWindow" :is-success=Boolean(listOfTrips.length)>
+            <template #header>
+                <strong v-if="listOfTrips.length">Код готов!</strong>
+                <strong v-else>Код не готов!</strong>
+            </template>
+            <main>
+                <p v-if="listOfTrips.length">Скопируйте или скачайте ваш код</p>
+                <p v-else>Выстройте маршрут перед сохранением кода.</p>
+            </main>
+            <template #footer>
+                <div v-if="listOfTrips.length">
+                    <button @click="isCodeViewVisible = true">Предпросмотр</button>
+                    <button @click="handleDownloadBtn">Скачать код</button>
+                    <button @click="copyAndToast(finallyText)">Скопировать код</button>
+                </div>
+            </template>
+        </MyDialog>
     </div>
-
-
-    <MyDialog v-show="isModalVisible" @close="isModalVisible = false" class="dialogWindow"
-              :is-success=Boolean(listOfTrips.length)>
-        <template #header>
-            <strong v-if="listOfTrips.length">Код готов!</strong>
-            <strong v-else>Код не готов!</strong>
-        </template>
-        <template #body>
-            <p v-if="listOfTrips.length">Скопируйте или скачайте ваш код</p>
-            <p v-else>Выстройте маршрут перед сохранением кода.</p>
-        </template>
-        <template #footer>
-            <div v-if="listOfTrips.length">
-                <button @click="handleDownloadBtn">Скачать код</button>
-                <button @click="copyAndToast(finallyText)">Скопировать код</button>
-                <button @click="isModalVisible = false">ОК</button>
-            </div>
-        </template>
-    </MyDialog>
+    <CodeView v-model:show="isCodeViewVisible" :code="finallyText" :show="isCodeViewVisible"/>
 </template>
 
 <style>
+* {
+    font-family: 'Courier New', Courier, monospace;
+}
+
 html {
-    background-image: radial-gradient(#383838e2, #222222);
+    background-image: radial-gradient(#23aae3e2, #222222);
+    font-size: 18px;
+}
+
+body {
+    margin: 0;
 }
 
 :root {
-    --side: 70px;
+    --side: 75px;
 }
 
 .wraper {
     display: flex;
     justify-content: center;
+    //padding: 20% 0;
+    //TODO: рассмотреть вариант
 }
 
 .grid {
     display: grid;
     padding: 3px;
     grid-template-columns: repeat(10, var(--side));
-    gap: 10px;
+    gap: 5px;
     user-select: none;
 }
 
@@ -356,11 +382,11 @@ html {
     transition: background-color 0.3s ease;
 
     color: white;
-    font-size: 18px;
     text-shadow: -1px -1px 0 black,
     1px -1px 0 black,
     -1px 1px 0 black,
     1px 1px 0 black;
+    box-sizing: border-box;
 }
 
 .square:hover {
@@ -380,19 +406,16 @@ html {
 }
 
 .actions {
-    margin-left: 10px;
+    margin: 3px 0 0 10px;
+
     display: flex;
     flex-direction: column;
+    gap: 10px;
+    width: 150px;
 }
 
 .actions button {
-    border: 2px solid rgb(251, 251, 251);
-    padding: 15px 30px;
-    font-size: 15px;
-    background-color: #383838;
-    color: white;
-    cursor: pointer;
-    margin: 5px;
-    transition: 0.3s;
+    padding: 20px 35px;
+    /* background-color: red; */
 }
 </style>

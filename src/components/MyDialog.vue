@@ -153,25 +153,21 @@ useEventListener("keydown", handleKeydown);
 /* Начало появления: ниже и прозрачный */
 .modal-fade-enter-from {
     opacity: 0;
-    transform: translateY(20px);
 }
 
 /* Конец появления: на месте и видим */
 .modal-fade-enter-to {
     opacity: 1;
-    transform: translateY(0);
 }
 
 /* Начало исчезания: на месте и видим */
 .modal-fade-leave-from {
     opacity: 1;
-    transform: translateY(0);
 }
 
 /* Конец исчезания: выше и прозрачный */
 .modal-fade-leave-to {
     opacity: 0;
-    transform: translateY(-20px);
 }
 
 /* Общие настройки анимации (скорость + плавность) */

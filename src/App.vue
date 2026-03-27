@@ -9,6 +9,11 @@ import ContextMenu from "@imengyu/vue3-context-menu";
 import CustomButton from '@/components/UI/CustomButton.vue'
 import CodeView from "@/components/CodeView.vue";
 
+import emergencyAndNavigate from './shablons/emergency_and_navigate.js'
+import color from './shablons/color.js'
+import qr from './shablons/qr.js'
+
+
 const numbers = ref([]); // Инициализируем массив с пустыми строками
 const clickCount = ref(1); // Счетчик нажатий
 const listOfTrips = ref([]);
@@ -63,16 +68,14 @@ async function saveResult() {
     const isUsedQR = listOfTrips.value.some(item => item.isQR);
 
     if (isUsedPlatform) {
-        const response = await fetch("/shablons/color.txt")
-        let textOfCode = await response.text()
+        let textOfCode = color
         textOfCode = textOfCode.split('<<separator>>')
         colorDetectClass.value = textOfCode[0]
         colorDetectCode.value += `\t${textOfCode[1].trim()}\n`;
     }
 
     if (isUsedQR) {
-        const response = await fetch("/shablons/qr.txt")
-        let textOfCode = await response.text()
+        let textOfCode = qr
         textOfCode = textOfCode.split('<<separator>>')
         QRDetectClass.value = textOfCode[0]
         QRDetectCode.value += `\t${textOfCode[1].trim()}\n`;
@@ -87,8 +90,7 @@ async function saveResult() {
             mainCode.value += QRDetectCode.value + '\n'
         }
     }
-    const response = await fetch("/shablons/emergency_and_navigate.txt")
-    let textOfCode = await response.text()
+    let textOfCode = emergencyAndNavigate
     finallyText.value = textOfCode.replace("<<main>>", mainCode.value);
     if (isUsedPlatform) {
         finallyText.value = finallyText.value.replace("<<ColorDetect>>", colorDetectClass.value);

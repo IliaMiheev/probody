@@ -123,6 +123,10 @@ useEventListener("keydown", handleKeydown);
     border-radius: 5px;
 }
 
+.modal-footer a {
+    border-radius: 5px;
+}
+
 .modal-footer-success button {
     background-color: var(--successColor);
     border: none;

@@ -129,7 +129,7 @@ h1 {
     position: fixed;
     top: 0;
     left: 0;
-    width: 240px;
+    width: 25%;
     height: 100%;
     background-image: radial-gradient(#23aae3e2, #222222);
     color: white;
@@ -151,6 +151,10 @@ h1 {
     background-color: #333333;
     opacity: 90%;
     display: flex;
+}
+
+main {
+    text-align: justify;
 }
 
 .navigation-wrapper__footer {

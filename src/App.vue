@@ -67,6 +67,10 @@ async function saveResult() {
     const isUsedPlatform = listOfTrips.value.some(item => item.isPlatform);
     const isUsedQR = listOfTrips.value.some(item => item.isQR);
 
+    isModalVisible.value = true;
+    if (!listOfTrips.value.length) {
+        return
+    }
     if (isUsedPlatform) {
         let textOfCode = color
         textOfCode = textOfCode.split('<<separator>>')
@@ -102,7 +106,6 @@ async function saveResult() {
     } else {
         finallyText.value = finallyText.value.replace("<<qr_function>>", '');
     }
-    isModalVisible.value = true;
 }
 
 function cancel() {
@@ -125,7 +128,10 @@ function cleanResult() {
         item.variable = [];
         item.BgImg = 'images/ArUco-marker.jpg'
     })
-    listOfTrips.value = [];
+    izitoast.info({
+        title: 'Поле очищено',
+        message: 'Поле очищено. Можно строить маршрут заново',
+    })
 }
 
 // Обрабатываем нажатие Ctrl + Z
@@ -359,8 +365,9 @@ body {
 .wraper {
     display: flex;
     justify-content: center;
-    padding: 1% 0;
-    
+    padding-top: 20px;
+    //padding: 20% 0;
+    //TODO: рассмотреть вариант
 }
 
 .grid {
@@ -409,7 +416,6 @@ body {
 
 .actions {
     margin: 3px 0 0 10px;
-
     display: flex;
     flex-direction: column;
     gap: 10px;

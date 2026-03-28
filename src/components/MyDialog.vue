@@ -173,7 +173,7 @@ useEventListener("keydown", handleKeydown);
 /* Общие настройки анимации (скорость + плавность) */
 .modal-fade-enter-active,
 .modal-fade-leave-active {
-    transition: transform 0.7s cubic-bezier(.22, .9, .31, 1), opacity 0.7s ease;
+    transition: transform 0.5s cubic-bezier(.22, .9, .31, 1), opacity 0.5s ease;
     will-change: transform, opacity;
 }
 </style>

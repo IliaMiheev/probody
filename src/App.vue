@@ -359,8 +359,8 @@ body {
 .wraper {
     display: flex;
     justify-content: center;
-    //padding: 20% 0;
-    //TODO: рассмотреть вариант
+    padding: 1% 0;
+    
 }
 
 .grid {

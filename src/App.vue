@@ -6,12 +6,14 @@ import MyDialog from "@/components/MyDialog.vue";
 import MyDropMenu from "@/components/MyDropMenu.vue";
 import copyToclipboard from "@/shared/copyToclipboard";
 import ContextMenu from "@imengyu/vue3-context-menu";
-import CustomButton from '@/components/UI/CustomButton.vue'
 import CodeView from "@/components/CodeView.vue";
-
-import emergencyAndNavigate from './shablons/emergency_and_navigate.js'
-import color from './shablons/color.js'
-import qr from './shablons/qr.js'
+import emergencyAndNavigate from '@/shablons/emergency_and_navigate.js'
+import color from '@/shablons/color.js'
+import qr from '@/shablons/qr.js'
+import Preview from "@/components/UI/svg/Preview.vue";
+import Save from "@/components/UI/svg/Save.vue";
+import Trash from "@/components/UI/svg/Trash.vue";
+import Back from "@/components/UI/svg/Back.vue";
 
 
 const numbers = ref([]); // Инициализируем массив с пустыми строками
@@ -20,6 +22,7 @@ const listOfTrips = ref([]);
 const isModalVisible = ref(false);
 const isCodeViewVisible = ref(false);
 const finallyText = ref("");
+const dropMenu = ref(null)
 
 onMounted(() => {
     for (let i = 0; i < 100; i++) {
@@ -57,7 +60,24 @@ function setNumber(item) {
     }
 }
 
-async function saveResult() {
+function openPreview() {
+    generateCode()
+    if (!listOfTrips.value.length) {
+        izitoast.error({
+            title: 'Ошибка',
+            message: 'Для предпросмотра нужно создать маршрут'
+        })
+        return
+    }
+    isCodeViewVisible.value = true;
+}
+
+function saveResult() {
+    isModalVisible.value = true;
+    generateCode()
+}
+
+function generateCode() {
     finallyText.value = "";
     const mainCode = ref("");
     const colorDetectClass = ref("");
@@ -67,7 +87,6 @@ async function saveResult() {
     const isUsedPlatform = listOfTrips.value.some(item => item.isPlatform);
     const isUsedQR = listOfTrips.value.some(item => item.isQR);
 
-    isModalVisible.value = true;
     if (!listOfTrips.value.length) {
         return
     }
@@ -128,6 +147,7 @@ function cleanResult() {
         item.variable = [];
         item.BgImg = 'images/ArUco-marker.jpg'
     })
+    listOfTrips.value = []
     izitoast.info({
         title: 'Поле очищено',
         message: 'Поле очищено. Можно строить маршрут заново',
@@ -142,6 +162,9 @@ const handleKeydown = (event) => {
     } else if (event.ctrlKey && event.code === "KeyS") {
         event.preventDefault();
         saveResult();
+    } else if (event.ctrlKey && event.code === "KeyN") {
+        event.preventDefault();
+        dropMenu.value.open();
     } else if (event.code === "Delete") {
         event.preventDefault();
         cleanResult();
@@ -277,7 +300,7 @@ function onContextMenu(e, item) {
                     {
                         label: "Удалить",
                         onClick: () => deletePlatform(item),
-                        icon: createIcon('icons/trash.webp'),
+                        icon: createIcon('icons/trash.svg'),
                     },
                 ]
             },
@@ -293,14 +316,14 @@ function onContextMenu(e, item) {
                     {
                         label: "Удалить",
                         onClick: () => deleteQR(item),
-                        icon: createIcon('icons/trash.webp')
+                        icon: createIcon('icons/trash.svg')
 
                     },
                 ],
             },
             {
                 label: "Удалить",
-                icon: createIcon('icons/trash.webp'),
+                icon: createIcon('icons/trash.svg'),
                 onClick: () => deletePointMap(item),
             },
         ]
@@ -318,11 +341,12 @@ function onContextMenu(e, item) {
         </div>
 
         <div class="actions">
-            <custom-button @click="saveResult">Сохранить</custom-button>
-            <custom-button @click="cleanResult">Очистить</custom-button>
-            <custom-button @click="cancel">Отменить</custom-button>
+            <Save @click="saveResult"/>
+            <Trash @click="cleanResult"/>
+            <Back @click="cancel"/>
+            <Preview @click="openPreview"/>
         </div>
-        <MyDropMenu/>
+        <MyDropMenu ref="dropMenu"/>
         <MyDialog v-model:show="isModalVisible" class="dialogWindow" :is-success=Boolean(listOfTrips.length)>
             <template #header>
                 <strong v-if="listOfTrips.length">Код готов!</strong>
@@ -365,9 +389,7 @@ body {
 .wraper {
     display: flex;
     justify-content: center;
-    padding-top: 20px;
-    //padding: 20% 0;
-    //TODO: рассмотреть вариант
+    padding: 20px 0 80px 0;
 }
 
 .grid {
@@ -415,11 +437,44 @@ body {
 }
 
 .actions {
-    margin: 3px 0 0 10px;
+    position: fixed;
+    bottom: 10px;
     display: flex;
-    flex-direction: column;
     gap: 10px;
-    width: 150px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background-color: #2f2f2f;
+
+
+    //background: rgba(255, 255, 255, 0.2);
+    //backdrop-filter: blur(10px);
+    //-webkit-backdrop-filter: blur(10px);
+    //box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    //border: 2px solid rgba(255, 255, 255, 0.18);
+    /*
+        Эффект жидкого стекла
+        Оставил для обсуждения
+        Не удалять!
+    */
+}
+
+.actions svg {
+    width: 40px;
+    height: 40px;
+    transition: color 0.4s;
+}
+
+.actions svg:hover {
+    color: rgba(20, 104, 140, 0.89);
+}
+
+.actions svg:active {
+    transition: color 0s;
+    color: #23aae3e2;
+}
+
+path {
+    fill: currentColor;
 }
 
 .actions button {

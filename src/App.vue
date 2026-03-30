@@ -1,7 +1,7 @@
 <script setup>
-import {ref, onMounted, h} from "vue";
+import { ref, onMounted, h } from "vue";
 import izitoast from "@/shared/izitoast";
-import {useEventListener} from "@vueuse/core";
+import { useEventListener } from "@vueuse/core";
 import MyDialog from "@/components/MyDialog.vue";
 import MyDropMenu from "@/components/MyDropMenu.vue";
 import copyToclipboard from "@/shared/copyToclipboard";
@@ -14,7 +14,7 @@ import Preview from "@/components/UI/svg/Preview.vue";
 import Save from "@/components/UI/svg/Save.vue";
 import Trash from "@/components/UI/svg/Trash.vue";
 import Back from "@/components/UI/svg/Back.vue";
-
+import { NButton, NTooltip } from 'naive-ui'
 
 const numbers = ref([]); // Инициализируем массив с пустыми строками
 const clickCount = ref(1); // Счетчик нажатий
@@ -184,7 +184,7 @@ function copyAndToast(text) {
 function handleDownloadBtn() {
     // Создание файла
     const downloadUrl = ref('');
-    const blob = new Blob([finallyText.value], {type: 'text/plain'});
+    const blob = new Blob([finallyText.value], { type: 'text/plain' });
     downloadUrl.value = URL.createObjectURL(blob);
     // Задержка для избежания ошибок в некоторых браузерах
     setTimeout(() => {
@@ -335,18 +335,38 @@ function onContextMenu(e, item) {
     <div v-if="!isCodeViewVisible" class="wraper">
         <div class="grid">
             <div class="square" v-for="(item, index) in numbers" :data-key="index" :key="index" @click="setNumber(item)"
-                 @contextmenu.prevent="onContextMenu($event, item)" :style="{ backgroundImage: `url(${item.BgImg})` }">
+                @contextmenu.prevent="onContextMenu($event, item)" :style="{ backgroundImage: `url(${item.BgImg})` }">
                 {{ numbers[index].variable.join(", ") }}
             </div>
         </div>
 
         <div class="actions">
-            <Save @click="saveResult"/>
-            <Trash @click="cleanResult"/>
-            <Back @click="cancel"/>
-            <Preview @click="openPreview"/>
+            <n-tooltip trigger="hover">
+                <template #trigger>
+                    <Save @click="saveResult" />
+                </template>
+                Сохранить
+            </n-tooltip>
+            <n-tooltip trigger="hover">
+                <template #trigger>
+                    <Trash @click="cleanResult" />
+                </template>
+                Удалить
+            </n-tooltip>
+            <n-tooltip trigger="hover">
+                <template #trigger>
+                     <Back @click="cancel" />
+                </template>
+                Отменить
+            </n-tooltip>
+            <n-tooltip trigger="hover">
+                <template #trigger>
+                    <Preview @click="openPreview" />
+                </template>
+                Превью
+            </n-tooltip>
         </div>
-        <MyDropMenu ref="dropMenu"/>
+        <MyDropMenu ref="dropMenu" />
         <MyDialog v-model:show="isModalVisible" class="dialogWindow" :is-success=Boolean(listOfTrips.length)>
             <template #header>
                 <strong v-if="listOfTrips.length">Код готов!</strong>
@@ -365,7 +385,7 @@ function onContextMenu(e, item) {
             </template>
         </MyDialog>
     </div>
-    <CodeView v-model:show="isCodeViewVisible" :code="finallyText" :show="isCodeViewVisible"/>
+    <CodeView v-model:show="isCodeViewVisible" :code="finallyText" :show="isCodeViewVisible" />
 </template>
 
 <style>
@@ -414,9 +434,9 @@ body {
 
     color: white;
     text-shadow: -1px -1px 0 black,
-    1px -1px 0 black,
-    -1px 1px 0 black,
-    1px 1px 0 black;
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black;
     box-sizing: border-box;
 }
 

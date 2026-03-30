@@ -20,7 +20,12 @@
                 </div>
 
                 <nav class="menu-content">
-                    <custom-button @click="openInfoCard(item)" v-for="item in informationForDirectory">{{ item.title }}</custom-button>
+                    <custom-button
+                        @click="openInfoCard(item)"
+                        v-for="item in informationForDirectory"
+                    >
+                        {{ item.title }}
+                    </custom-button>
                 </nav>
             </aside>
         </transition>
@@ -48,6 +53,7 @@ import {ref} from 'vue';
 import MyDialog from "@/components/MyDialog.vue";
 import CustomButton from '@/components/UI/CustomButton.vue'
 import informationForDirectory from "../data/informationForDirectory";
+import {useEventListener} from "@vueuse/core";
 
 const isOpen = ref(false);
 const isModalVisible = ref(false);
@@ -71,6 +77,14 @@ function openInfoCard(obj) {
     isOpen.value = false
     infoCard.value = obj
 }
+
+const handleKeydown = (event) => {
+    if (event.code === "Escape" && isOpen.value) {
+        event.preventDefault();
+        closeMenu();
+    }
+};
+useEventListener("keydown", handleKeydown);
 
 // Экспортируем методы, если захотим управлять меню извне
 defineExpose({open: () => (isOpen.value = true), close: closeMenu});

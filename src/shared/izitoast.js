@@ -1,7 +1,7 @@
 import iziToast from 'iziToast';
 
 iziToast.settings({
-    timeout: 3000,
+    timeout: 2500,
     closeOnEscape: true,
     closeOnClick : true,
     resetOnHover: false,

@@ -15,10 +15,12 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: width,
     height: height,
+    icon: './public/images/logo32x32.jpg',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
+  mainWindow.menuBarVisible = false;
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {

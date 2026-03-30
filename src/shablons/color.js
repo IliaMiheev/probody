@@ -1,4 +1,4 @@
-def color_detection(data, print_type='str'):
+export default `def color_detection(data, print_type='str'):
     '''определение цвета'''
 
     frame = bridge.imgmsg_to_cv2(data, 'bgr8')
@@ -34,7 +34,7 @@ def color_detection(data, print_type='str'):
             color = 'green'
         elif r > b + 20 and r > g + 20 and r > 100:  
             color = 'red'
-        elif r > 150 and g > 150 and g > 150:
+        elif r > 150 and g > 150 and b > 150:
             color= 'white'
         else:
             color = None
@@ -42,4 +42,4 @@ def color_detection(data, print_type='str'):
 <<separator>>
     color_sub = rospy.Subscriber('main_camera/image_raw', Image, lambda img: color_detection(img, print_type='rgb'), queue_size=1)
     rospy.sleep(2)
-    color_sub.unregister()
+    color_sub.unregister()`

@@ -60,8 +60,7 @@ function setNumber(item) {
     }
 }
 
-function openPreview(event) {
-    event.currentTarget.blur()
+function openPreview() {
     generateCode()
     if (!listOfTrips.value.length) {
         izitoast.error({
@@ -73,9 +72,8 @@ function openPreview(event) {
     isCodeViewVisible.value = true;
 }
 
-function saveResult(event) {
+function saveResult() {
     isModalVisible.value = true;
-    event.currentTarget.blur()
     generateCode()
 }
 
@@ -129,8 +127,7 @@ function generateCode() {
     }
 }
 
-function cancel(event) {
-    event.currentTarget.blur()
+function cancel() {
     if (clickCount.value === 1) {
         return;
     }
@@ -142,8 +139,7 @@ function cancel(event) {
     clickCount.value--;
 }
 
-function cleanResult(event) {
-    event.currentTarget.blur()
+function cleanResult() {
     clickCount.value = 1;
     numbers.value.forEach(item => {
         item.isPlatform = false;
@@ -276,6 +272,16 @@ function createIcon(src) {
     })
 }
 
+function createSvgIcon(svg) {
+    return h(svg,{
+        style:{
+            color: '#000',
+            width: '20px',
+            height: '20px',
+        }
+    })
+}
+
 function onContextMenu(e, item) {
     ContextMenu.showContextMenu({
         theme: 'mac dark',
@@ -304,7 +310,7 @@ function onContextMenu(e, item) {
                     {
                         label: "Удалить",
                         onClick: () => deletePlatform(item),
-                        icon: h(Trash),
+                        icon: createSvgIcon(Trash),
                     },
                 ]
             },
@@ -320,14 +326,14 @@ function onContextMenu(e, item) {
                     {
                         label: "Удалить",
                         onClick: () => deleteQR(item),
-                        icon: h(Trash)
+                        icon: createSvgIcon(Trash),
 
                     },
                 ],
             },
             {
                 label: "Удалить",
-                icon: h(Trash),
+                icon: createSvgIcon(Trash),
                 onClick: () => deletePointMap(item),
             },
         ]
@@ -395,6 +401,10 @@ function onContextMenu(e, item) {
 <style>
 * {
     font-family: 'Courier New', Courier, monospace;
+    outline: none;
+}
+* :focus-visible {
+    box-shadow: 0 0 0 3px #23aae3e2;
 }
 
 html {
@@ -477,9 +487,15 @@ body {
 }
 
 .actions svg {
+    outline: none;
     width: 40px;
     height: 40px;
     transition: color 0.4s;
+}
+
+.actions svg:focus-visible {
+    box-shadow: 0 0 0 3px #23aae3e2;
+    border-radius: 8px;
 }
 
 .actions svg:hover {

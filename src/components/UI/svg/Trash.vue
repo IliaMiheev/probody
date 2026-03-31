@@ -20,7 +20,4 @@
 .cls-1{
     fill:none;
 }
-#Layer_2 {
-    color: black;
-}
 </style>

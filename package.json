@@ -27,6 +27,7 @@
     "@electron/fuses": "^1.8.0",
     "@vitejs/plugin-vue": "^6.0.4",
     "electron": "40.1.0",
+    "naive-ui": "^2.44.1",
     "vite": "^5.4.21"
   },
   "dependencies": {

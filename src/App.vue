@@ -14,7 +14,7 @@ import Preview from "@/components/UI/svg/Preview.vue";
 import Save from "@/components/UI/svg/Save.vue";
 import Trash from "@/components/UI/svg/Trash.vue";
 import Back from "@/components/UI/svg/Back.vue";
-import { NButton, NTooltip } from 'naive-ui'
+import { NTooltip } from 'naive-ui'
 
 const numbers = ref([]); // Инициализируем массив с пустыми строками
 const clickCount = ref(1); // Счетчик нажатий
@@ -60,7 +60,8 @@ function setNumber(item) {
     }
 }
 
-function openPreview() {
+function openPreview(event) {
+    event.currentTarget.blur()
     generateCode()
     if (!listOfTrips.value.length) {
         izitoast.error({
@@ -72,8 +73,9 @@ function openPreview() {
     isCodeViewVisible.value = true;
 }
 
-function saveResult() {
+function saveResult(event) {
     isModalVisible.value = true;
+    event.currentTarget.blur()
     generateCode()
 }
 
@@ -127,7 +129,8 @@ function generateCode() {
     }
 }
 
-function cancel() {
+function cancel(event) {
+    event.currentTarget.blur()
     if (clickCount.value === 1) {
         return;
     }
@@ -139,7 +142,8 @@ function cancel() {
     clickCount.value--;
 }
 
-function cleanResult() {
+function cleanResult(event) {
+    event.currentTarget.blur()
     clickCount.value = 1;
     numbers.value.forEach(item => {
         item.isPlatform = false;
@@ -300,7 +304,7 @@ function onContextMenu(e, item) {
                     {
                         label: "Удалить",
                         onClick: () => deletePlatform(item),
-                        icon: createIcon('icons/trash.svg'),
+                        icon: h(Trash),
                     },
                 ]
             },
@@ -316,14 +320,14 @@ function onContextMenu(e, item) {
                     {
                         label: "Удалить",
                         onClick: () => deleteQR(item),
-                        icon: createIcon('icons/trash.svg')
+                        icon: h(Trash)
 
                     },
                 ],
             },
             {
                 label: "Удалить",
-                icon: createIcon('icons/trash.svg'),
+                icon: h(Trash),
                 onClick: () => deletePointMap(item),
             },
         ]
@@ -395,10 +399,10 @@ function onContextMenu(e, item) {
 
 html {
     background-image: radial-gradient(#23aae3e2, #222222);
-    font-size: 18px;
 }
 
 body {
+    font-size: 18px;
     margin: 0;
 }
 

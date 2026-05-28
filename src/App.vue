@@ -96,18 +96,18 @@ function generateCode() {
         let textOfCode = color
         textOfCode = textOfCode.split('<<separator>>')
         colorDetectClass.value = textOfCode[0]
-        colorDetectCode.value += `\t${textOfCode[1].trim()}\n`;
+        colorDetectCode.value += `    ${textOfCode[1].trim()}\n`;
     }
 
     if (isUsedQR) {
         let textOfCode = qr
         textOfCode = textOfCode.split('<<separator>>')
         QRDetectClass.value = textOfCode[0]
-        QRDetectCode.value += `\t${textOfCode[1].trim()}\n`;
+        QRDetectCode.value += `    ${textOfCode[1].trim()}\n`;
     }
 
     for (const item of listOfTrips.value) {
-        mainCode.value += `\tnavigate_wait(${item.x}, ${item.y})\n`;
+        mainCode.value += `    navigate_wait(${item.x}, ${item.y})\n`;
         if (item.isPlatform) {
             mainCode.value += colorDetectCode.value + '\n'
         }

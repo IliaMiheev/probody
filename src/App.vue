@@ -15,6 +15,7 @@ import Save from "@/components/UI/svg/Save.vue";
 import Trash from "@/components/UI/svg/Trash.vue";
 import Back from "@/components/UI/svg/Back.vue";
 import { NTooltip } from 'naive-ui'
+import DroneParts from "@/components/DroneParts.vue";
 
 const numbers = ref([]); // Инициализируем массив с пустыми строками
 const clickCount = ref(1); // Счетчик нажатий
@@ -23,6 +24,7 @@ const isModalVisible = ref(false);
 const isCodeViewVisible = ref(false);
 const finallyText = ref("");
 const dropMenu = ref(null)
+const showDroneParts = ref(false);
 
 onMounted(() => {
     for (let i = 0; i < 100; i++) {
@@ -336,7 +338,16 @@ function onContextMenu(e, item) {
 </script>
 
 <template>
-    <div v-if="!isCodeViewVisible" class="wraper">
+    <button 
+        v-if="!showDroneParts"
+        @click="showDroneParts = true" 
+        class="show-parts-btn"
+    >
+        <img src="/images/drone.png" alt="menu" class="btn-icon" />
+    </button>
+
+    <DroneParts v-if="showDroneParts" @back="showDroneParts = false" />
+    <div v-if="!showDroneParts && !isCodeViewVisible" class="wraper">
         <div class="grid">
             <div class="square" v-for="(item, index) in numbers" :data-key="index" :key="index" @click="setNumber(item)"
                 @contextmenu.prevent="onContextMenu($event, item)" :style="{ backgroundImage: `url(${item.BgImg})` }">
@@ -408,6 +419,34 @@ body {
 
 :root {
     --side: 75px;
+}
+
+.show-parts-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    width: 50px;        
+    height: 50px;       
+    padding: 0;
+    background: rgba(12, 12, 12, 0.034);
+    border: none; 
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.btn-icon {
+    width: 90%;     
+    height: 90%;      
+    object-fit: cover; 
+}
+
+.show-parts-btn:hover {
+    transform: scale(1.05);
 }
 
 .wraper {
@@ -497,6 +536,5 @@ path {
 
 .actions button {
     padding: 20px 35px;
-    /* background-color: red; */
 }
 </style>

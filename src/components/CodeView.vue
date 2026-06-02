@@ -18,13 +18,13 @@ const props = defineProps({
     <div class="code-view" v-if="show">
         <CustomButton
             @click.stop="$emit('update:show', false)">
-            Вернуться к сохранению сгенерированного кода
+            Вернуться к генерации маршрута
         </CustomButton>
         <CodeBlock :code="code" />
 
         <CustomButton
             @click.stop="$emit('update:show', false)">
-            Вернуться к сохранению сгенерированного кода
+            Вернуться к генерации маршрута
         </CustomButton>
         <MovementButtons/>
     </div>

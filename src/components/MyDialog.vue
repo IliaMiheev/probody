@@ -80,9 +80,9 @@ useEventListener("keydown", handleKeydown);
     overflow-x: auto;
     display: flex;
     flex-direction: column;
-    max-width: 500px;
-    width: 90%;
+    width: 55%;
     border-radius: 5px;
+    font-size: 1.5rem;
 }
 
 .modal-header,
@@ -110,16 +110,17 @@ useEventListener("keydown", handleKeydown);
 }
 
 .modal-footer {
-    justify-content: flex-end;
     border-top: 1px solid white;
+    display: flex;
+    gap: 5px;
 }
 
 .modal-footer button {
-    justify-content: flex-end;
+    width: 33%;
     border-top: 1px solid white;
     padding: 5px;
     color: black;
-    font-size: 15px;
+    font-size: 20px;
     border-radius: 5px;
 }
 

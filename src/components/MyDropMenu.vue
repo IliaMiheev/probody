@@ -99,8 +99,8 @@ defineExpose({open: () => (isOpen.value = true), close: closeMenu});
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    width: 40px;
-    height: 30px;
+    min-width: 40px;
+    min-height: 30px;
     background: rgba(255, 255, 255, 0.508);
     border: 1px solid #383838;
     cursor: pointer;
@@ -109,12 +109,18 @@ defineExpose({open: () => (isOpen.value = true), close: closeMenu});
 
 h1 {
     text-align: center;
+    font-size: 3rem;
 }
 
 .menu-content {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    padding-bottom: 20px;
+}
+
+.menu-content button{
+    font-size: 1.2rem;
 }
 
 .line {

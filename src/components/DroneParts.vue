@@ -6,22 +6,16 @@
     </button>
 
     <!-- Левая панель - список компонентов -->
-    <div class="parts-list">
-      <div 
-        v-for="part in parts" 
+    <div class="parts-list scroll-strip">
+      <ListCard
+        v-for="part in parts"
         :key="part.id"
-        class="part-item"
-        :class="{ active: selectedPart?.id === part.id }"
+        :title="part.name"
+        :subtitle="part.category"
+        :image="part.image"
+        :active="selectedPart?.id === part.id"
         @click="selectPart(part)"
-      >
-        <div class="part-image-wrapper">
-          <img :src="part.image" :alt="part.name" class="part-thumb" />
-        </div>
-        <div class="part-info">
-          <span class="part-name">{{ part.name }}</span>
-          <span class="part-category">{{ part.category }}</span>
-        </div>
-      </div>
+      />
     </div>
 
     <!-- Правая часть - детали -->
@@ -76,6 +70,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import ListCard from '@/components/UI/ListCard.vue'
 
 const emit = defineEmits(['back'])
 let db = null
@@ -273,83 +268,10 @@ onMounted(async () => {
 .parts-list {
   width: 300px;
   height: 100%;
-  overflow-y: auto;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: 0;
-}
-
-.parts-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.parts-list::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-}
-
-.parts-list::-webkit-scrollbar-thumb {
-  background: #23aae3;
-  border-radius: 3px;
-}
-
-.part-item {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 15px;
-  margin: 8px 12px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.part-item:hover {
-  background: rgba(35, 170, 227, 0.2);
-  transform: translateX(5px);
-}
-
-.part-item.active {
-  background: linear-gradient(135deg, #23aae3, #1a6d8f);
-  box-shadow: 0 4px 15px rgba(35, 170, 227, 0.3);
-}
-
-.part-image-wrapper {
-  width: 50px;
-  height: 50px;
-  flex-shrink: 0;
-}
-
-.part-thumb {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.part-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.part-name {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.part-category {
-  display: block;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.6);
 }
 
 /* Правая область */

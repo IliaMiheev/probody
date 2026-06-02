@@ -1,10 +1,9 @@
 <script setup>
-import { ref, onMounted, h } from "vue";
+import { ref, onMounted, h, inject } from "vue";
 import { useRouter } from "vue-router";
 import izitoast from "@/shared/izitoast";
 import { useEventListener } from "@vueuse/core";
 import MyDialog from "@/components/MyDialog.vue";
-import MyDropMenu from "@/components/MyDropMenu.vue";
 import copyToclipboard from "@/shared/copyToclipboard";
 import ContextMenu from "@imengyu/vue3-context-menu";
 import emergencyAndNavigate from '@/shablons/emergency_and_navigate.js'
@@ -24,7 +23,7 @@ const numbers = ref([]);
 const clickCount = ref(1);
 const listOfTrips = ref([]);
 const isModalVisible = ref(false);
-const dropMenu = ref(null)
+const dropMenu = inject('dropMenu')
 
 onMounted(() => {
     for (let i = 0; i < 100; i++) {
@@ -172,7 +171,7 @@ const handleKeydown = (event) => {
         saveResult();
     } else if (event.ctrlKey && event.code === "KeyN") {
         event.preventDefault();
-        dropMenu.value.open();
+        dropMenu.value?.open();
     } else if (event.code === "Delete") {
         event.preventDefault();
         cleanResult();
@@ -371,7 +370,6 @@ function onContextMenu(e, item) {
                 Превью
             </n-tooltip>
         </div>
-        <MyDropMenu ref="dropMenu" />
         <MyDialog v-model:show="isModalVisible" class="dialogWindow" :is-success=Boolean(listOfTrips.length)>
             <template #header>
                 <strong v-if="listOfTrips.length">Код готов!</strong>

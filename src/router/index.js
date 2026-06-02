@@ -14,6 +14,11 @@ const router = createRouter({
             name: 'preview',
             component: () => import('@/views/PreviewView.vue'),
         },
+        {
+            path: '/topic/:source/:id',
+            name: 'topic',
+            component: () => import('@/views/TopicView.vue'),
+        },
     ],
 })
 

@@ -22,6 +22,25 @@
                     text-color="#ffffff"
                     active-text-color="#23aae3"
                 >
+                    <el-sub-menu index="parts">
+                        <template #title>
+                            <span class="menu-content__group-title">Запчасти</span>
+                        </template>
+                        <el-menu-item
+                            v-for="part in parts"
+                            :key="part.id"
+                            :index="`part-${part.id}`"
+                            class="menu-list-item"
+                            @click="openPart(part)"
+                        >
+                            <ListCard
+                                :title="part.name"
+                                :subtitle="part.category"
+                                :image="part.image"
+                                :active="isPartActive(part.id)"
+                            />
+                        </el-menu-item>
+                    </el-sub-menu>
                     <el-sub-menu index="terms">
                         <template #title>
                             <span class="menu-content__group-title">Термины</span>
@@ -30,7 +49,7 @@
                             v-for="(item, index) in informationForDirectory"
                             :key="item.title"
                             :index="`term-${index}`"
-                            class="terms-menu-item"
+                            class="menu-list-item"
                             @click="openInfoCard(item)"
                         >
                             <ListCard
@@ -63,12 +82,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import MyDialog from "@/components/MyDialog.vue";
 import CustomButton from '@/components/UI/CustomButton.vue'
 import ListCard from '@/components/UI/ListCard.vue'
 import informationForDirectory from "../data/informationForDirectory";
 import { useEventListener } from "@vueuse/core";
+import { usePartsCatalog } from '@/composables/usePartsCatalog';
+
+const route = useRoute()
+const router = useRouter()
+const { parts, loadParts } = usePartsCatalog()
 
 const isOpen = ref(false);
 const isModalVisible = ref(false);
@@ -77,6 +102,17 @@ const infoCard = ref({})
 function getSubtitle(body) {
     if (!body) return ''
     return body.length > 72 ? `${body.slice(0, 72)}…` : body
+}
+
+function isPartActive(partId) {
+    return route.name === 'topic'
+        && route.params.source === 'parts'
+        && Number(route.params.id) === partId
+}
+
+function openPart(part) {
+    isOpen.value = false
+    router.push({ name: 'topic', params: { source: 'parts', id: part.id } })
 }
 
 function handleOkBtn() {
@@ -105,6 +141,10 @@ const handleKeydown = (event) => {
     }
 };
 useEventListener("keydown", handleKeydown);
+
+onMounted(() => {
+    loadParts()
+})
 
 defineExpose({ open: () => (isOpen.value = true), close: closeMenu });
 </script>
@@ -147,7 +187,8 @@ h1 {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-.terms-menu-item {
+.terms-menu-item,
+.menu-list-item {
     height: auto;
     line-height: normal;
     padding: 0;
@@ -155,12 +196,14 @@ h1 {
     white-space: normal;
 }
 
-.terms-menu-item :deep(.list-card) {
+.terms-menu-item :deep(.list-card),
+.menu-list-item :deep(.list-card) {
     margin: 0;
     width: 100%;
 }
 
-.terms-menu-item.is-active {
+.terms-menu-item.is-active,
+.menu-list-item.is-active {
     background-color: transparent !important;
 }
 

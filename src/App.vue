@@ -1,8 +1,12 @@
 <script setup>
-import { ref } from "vue";
+import { ref, provide } from "vue";
 import DroneParts from "@/components/DroneParts.vue";
+import MyDropMenu from "@/components/MyDropMenu.vue";
 
 const showDroneParts = ref(false);
+const dropMenu = ref(null);
+
+provide('dropMenu', dropMenu);
 </script>
 
 <template>
@@ -14,6 +18,7 @@ const showDroneParts = ref(false);
         <img src="/images/drone.png" alt="menu" class="btn-icon" />
     </button>
 
+    <MyDropMenu v-if="!showDroneParts" ref="dropMenu" />
     <DroneParts v-if="showDroneParts" @back="showDroneParts = false" />
     <router-view v-if="!showDroneParts" />
 </template>

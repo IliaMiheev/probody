@@ -2,29 +2,26 @@
 import CustomButton from '@/components/UI/CustomButton.vue'
 import CodeBlock from "./CodeBlock.vue";
 import MovementButtons from "./MovementButtons.vue";
-const props = defineProps({
+
+defineProps({
     code: {
         required: true,
         type: String
     },
-    show: {
-        type: Boolean,
-        default: false
-    }
 })
+
+defineEmits(['back'])
 </script>
 
 <template>
-    <div class="code-view" v-if="show">
-        <CustomButton
-            @click.stop="$emit('update:show', false)">
-            Вернуться к сохранению сгенерированного кода
+    <div class="code-view">
+        <CustomButton @click="$emit('back')">
+            Вернуться к маршруту
         </CustomButton>
         <CodeBlock :code="code" />
 
-        <CustomButton
-            @click.stop="$emit('update:show', false)">
-            Вернуться к сохранению сгенерированного кода
+        <CustomButton @click="$emit('back')">
+            Вернуться к маршруту
         </CustomButton>
         <MovementButtons/>
     </div>
@@ -36,7 +33,7 @@ const props = defineProps({
     overflow: auto;
     color: #eeeeee;
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
     z-index: 999;
 }
 </style>

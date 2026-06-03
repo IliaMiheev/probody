@@ -60,11 +60,11 @@ const imageSrc = computed(() => props.image || APP_LOGO)
     cursor: pointer;
     transition: all 0.2s ease;
     background: rgba(255, 255, 255, 0.05);
+    box-sizing: border-box;
 }
 
 .list-card:hover {
     background: rgba(35, 170, 227, 0.2);
-    transform: translateX(5px);
 }
 
 .list-card--active {
@@ -81,6 +81,7 @@ const imageSrc = computed(() => props.image || APP_LOGO)
 .list-card__image {
     width: 100%;
     height: 100%;
+    background-size: initial;
     object-fit: cover;
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -106,5 +107,8 @@ const imageSrc = computed(() => props.image || APP_LOGO)
     display: block;
     font-size: 11px;
     color: rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 </style>

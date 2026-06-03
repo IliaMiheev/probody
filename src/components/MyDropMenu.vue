@@ -121,6 +121,7 @@ h1 {
 
 .menu-content {
     border-right: none;
+    padding-bottom: 30px;
 }
 
 .menu-content__group-title {
@@ -147,6 +148,11 @@ h1 {
 .menu-list-item :deep(.list-card) {
     margin: 0;
     width: 100%;
+}
+
+.menu-list-item:hover,
+.menu-content :deep(.el-menu-item.menu-list-item:hover) {
+    background-color: transparent !important;
 }
 
 .menu-list-item.is-active {

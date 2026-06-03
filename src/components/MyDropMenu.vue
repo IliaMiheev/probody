@@ -24,7 +24,7 @@
                 >
                     <el-sub-menu index="parts">
                         <template #title>
-                            <span class="menu-content__group-title">Запчасти</span>
+                            <span class="menu-content__group-title">Компоненты дрона</span>
                         </template>
                         <el-menu-item
                             v-for="part in parts"

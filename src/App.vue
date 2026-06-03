@@ -1,14 +1,4 @@
-<script setup>
-import { ref, provide } from "vue";
-import MyDropMenu from "@/components/MyDropMenu.vue";
-
-const dropMenu = ref(null);
-
-provide('dropMenu', dropMenu);
-</script>
-
 <template>
-    <MyDropMenu ref="dropMenu" />
     <router-view />
 </template>
 

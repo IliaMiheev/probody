@@ -1,9 +1,10 @@
 <script setup>
-import { ref, onMounted, h, inject } from "vue";
+import { ref, onMounted, h, inject, provide } from "vue";
 import { useRouter } from "vue-router";
 import izitoast from "@/shared/izitoast";
 import { useEventListener } from "@vueuse/core";
 import MyDialog from "@/components/MyDialog.vue";
+import MyDropMenu from "@/components/MyDropMenu.vue";
 import copyToclipboard from "@/shared/copyToclipboard";
 import ContextMenu from "@imengyu/vue3-context-menu";
 import emergencyAndNavigate from '@/shablons/emergency_and_navigate.js'
@@ -16,6 +17,7 @@ import Back from "@/components/UI/svg/Back.vue";
 import { NTooltip } from 'naive-ui'
 import { useFlightCode } from '@/composables/useFlightCode'
 
+
 const router = useRouter()
 const { finallyText } = useFlightCode()
 
@@ -23,7 +25,8 @@ const numbers = ref([]);
 const clickCount = ref(1);
 const listOfTrips = ref([]);
 const isModalVisible = ref(false);
-const dropMenu = inject('dropMenu')
+const dropMenu = ref(null);
+provide('dropMenu', dropMenu);
 
 onMounted(() => {
     for (let i = 0; i < 100; i++) {
@@ -336,6 +339,7 @@ function onContextMenu(e, item) {
 </script>
 
 <template>
+    <MyDropMenu ref="dropMenu" />
     <div class="wraper">
         <div class="grid">
             <div class="square" v-for="(item, index) in numbers" :data-key="index" :key="index" @click="setNumber(item)"

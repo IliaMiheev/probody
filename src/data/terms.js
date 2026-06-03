@@ -2,12 +2,14 @@ const rawTerms = [
     {
         title: 'ROS',
         body: 'ROS (Robot Operating System) — экосистема для программирования роботов. В приложении через ROS дрон получает команды, передает телеметрию и данные с камеры.',
+        image: '/images/terms/ROS.webp',
         hrefToDoc: 'https://www.ros.org/',
         hrefToCourse: 'https://stepik.org/lesson/2260739/step/1?unit=2294748',
     },
     {
         title: 'OpenCV',
         body: 'OpenCV (Open Source Computer Vision Library) — библиотека компьютерного зрения. С её помощью дрон распознает цвета платформ и считывает QR-коды.',
+        image: '/images/terms/openCV.webp',
         hrefToDoc: 'https://opencv.org/',
         hrefToCourse: 'https://stepik.org/lesson/2272700/step/1?unit=2306893',
     },
@@ -56,6 +58,7 @@ const rawTerms = [
     {
         title: 'ArUco-маркер',
         body: 'ArUco-маркер — квадратный визуальный маркер, который камера дрона может распознавать. Используется для навигации: по положению маркера дрон определяет свои координаты в пространстве.',
+        image: '/images/terms/ArUco-marker.webp',
         hrefToCourse: 'https://stepik.org/lesson/2264336/step/1?unit=2298407',
         hrefToDoc: 'https://klever-doc.tech/ROS1/ru/aruco.html',
     },
@@ -82,7 +85,7 @@ export default rawTerms.map((item, index) => ({
     id: index + 1,
     title: item.title,
     subtitle: toSubtitle(item.body),
-    image: '',
+    image: item.image ?? '',
     description: item.body,
     hrefToDoc: item.hrefToDoc ?? null,
     hrefToCourse: item.hrefToCourse ?? null,

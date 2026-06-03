@@ -2,10 +2,14 @@
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { resolveTopic } from '@/composables/useTopicResolver'
+import MyDropMenu from "@/components/MyDropMenu.vue";
+import { inject, provide } from "vue";
 
 const route = useRoute()
 const router = useRouter()
 const topic = ref(null)
+const dropMenu = ref(null);
+provide('dropMenu', dropMenu);
 
 async function loadTopic() {
     topic.value = await resolveTopic(route.params.source, route.params.id)
@@ -27,6 +31,7 @@ function goBack() {
 </script>
 
 <template>
+    <MyDropMenu ref="dropMenu" />
     <div v-if="topic" class="topic-view scroll-strip">
         <article class="topic-view__card">
             <button class="topic-view__back" @click="goBack">

@@ -22,102 +22,57 @@
                     text-color="#ffffff"
                     active-text-color="#23aae3"
                 >
-                    <el-sub-menu index="parts">
+                    <el-sub-menu
+                        v-for="group in menuGroups"
+                        :key="group.source"
+                        :index="group.source"
+                    >
                         <template #title>
-                            <span class="menu-content__group-title">Компоненты дрона</span>
+                            <span class="menu-content__group-title">{{ group.name }}</span>
                         </template>
                         <el-menu-item
-                            v-for="part in parts"
-                            :key="part.id"
-                            :index="`part-${part.id}`"
+                            v-for="item in group.items"
+                            :key="`${group.source}-${item.id}`"
+                            :index="`${group.source}-${item.id}`"
                             class="menu-list-item"
-                            @click="openPart(part)"
-                        >
-                            <ListCard
-                                :title="part.name"
-                                :subtitle="part.category"
-                                :image="part.image"
-                                :active="isPartActive(part.id)"
-                            />
-                        </el-menu-item>
-                    </el-sub-menu>
-                    <el-sub-menu index="terms">
-                        <template #title>
-                            <span class="menu-content__group-title">Термины</span>
-                        </template>
-                        <el-menu-item
-                            v-for="(item, index) in informationForDirectory"
-                            :key="item.title"
-                            :index="`term-${index}`"
-                            class="menu-list-item"
-                            @click="openInfoCard(item)"
+                            @click="openTopic(group.source, item.id)"
                         >
                             <ListCard
                                 :title="item.title"
-                                :subtitle="getSubtitle(item.body)"
-                                :active="isModalVisible && infoCard.title === item.title"
+                                :subtitle="item.subtitle"
+                                :image="item.image"
+                                :active="isTopicActive(group.source, item.id)"
                             />
                         </el-menu-item>
                     </el-sub-menu>
                 </el-menu>
             </aside>
         </transition>
-
-        <MyDialog isSuccess v-model:show="isModalVisible" @close="handleOkBtn">
-            <template #header>
-                <strong>{{ infoCard.title }}</strong>
-            </template>
-            <main>
-                <p>{{ infoCard.body }}</p>
-            </main>
-            <template #footer>
-                <div class="navigation-wrapper__footer">
-                    <custom-button :to="infoCard.hrefToCourse" title="Посмотреть на Stepik">Курс</custom-button>
-                    <custom-button :to="infoCard.hrefToDoc" title="Посмотреть в официальной документации">Документация</custom-button>
-                    <custom-button @click="handleOkBtn">ОК</custom-button>
-                </div>
-            </template>
-        </MyDialog>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import MyDialog from "@/components/MyDialog.vue";
-import CustomButton from '@/components/UI/CustomButton.vue'
 import ListCard from '@/components/UI/ListCard.vue'
-import informationForDirectory from "../data/informationForDirectory";
+import { getMenuGroups } from '@/data/index.js'
 import { useEventListener } from "@vueuse/core";
-import { usePartsCatalog } from '@/composables/usePartsCatalog';
 
 const route = useRoute()
 const router = useRouter()
-const { parts, loadParts } = usePartsCatalog()
 
 const isOpen = ref(false);
-const isModalVisible = ref(false);
-const infoCard = ref({})
+const menuGroups = ref([])
 
-function getSubtitle(body) {
-    if (!body) return ''
-    return body.length > 72 ? `${body.slice(0, 72)}…` : body
-}
-
-function isPartActive(partId) {
+function isTopicActive(source, id) {
     return route.name === 'topic'
-        && route.params.source === 'parts'
-        && Number(route.params.id) === partId
+        && route.params.source === source
+        && Number(route.params.id) === id
 }
 
-function openPart(part) {
+function openTopic(source, id) {
     isOpen.value = false
-    router.push({ name: 'topic', params: { source: 'parts', id: part.id } })
-}
-
-function handleOkBtn() {
-    isModalVisible.value = false
-    isOpen.value = true
+    router.push({ name: 'topic', params: { source, id } })
 }
 
 const toggleMenu = () => {
@@ -128,12 +83,6 @@ const closeMenu = () => {
     isOpen.value = false;
 };
 
-function openInfoCard(obj) {
-    isModalVisible.value = true
-    isOpen.value = false
-    infoCard.value = obj
-}
-
 const handleKeydown = (event) => {
     if (event.code === "Escape" && isOpen.value) {
         event.preventDefault();
@@ -143,7 +92,7 @@ const handleKeydown = (event) => {
 useEventListener("keydown", handleKeydown);
 
 onMounted(() => {
-    loadParts()
+    menuGroups.value = getMenuGroups()
 })
 
 defineExpose({ open: () => (isOpen.value = true), close: closeMenu });
@@ -187,7 +136,6 @@ h1 {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-.terms-menu-item,
 .menu-list-item {
     height: auto;
     line-height: normal;
@@ -196,13 +144,11 @@ h1 {
     white-space: normal;
 }
 
-.terms-menu-item :deep(.list-card),
 .menu-list-item :deep(.list-card) {
     margin: 0;
     width: 100%;
 }
 
-.terms-menu-item.is-active,
 .menu-list-item.is-active {
     background-color: transparent !important;
 }
@@ -250,16 +196,6 @@ h1 {
     background-color: #333333;
     opacity: 90%;
     display: flex;
-}
-
-main {
-    text-align: justify;
-}
-
-.navigation-wrapper__footer {
-    display: flex;
-    gap: 10px;
-    width: 100%;
 }
 
 .slide-enter-active,

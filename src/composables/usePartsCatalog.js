@@ -1,31 +1,11 @@
 import { ref } from 'vue'
+import partsItems from '@/data/parts.js'
 
-const parts = ref([])
-let loadPromise = null
+const parts = ref([...partsItems])
 
 export function usePartsCatalog() {
     async function loadParts() {
-        if (parts.value.length) {
-            return parts.value
-        }
-
-        if (!loadPromise) {
-            loadPromise = fetch('/droneComponents/components.json')
-                .then((response) => (response.ok ? response.json() : []))
-                .then((data) => {
-                    parts.value = data
-                    return data
-                })
-                .catch(() => {
-                    parts.value = []
-                    return []
-                })
-                .finally(() => {
-                    loadPromise = null
-                })
-        }
-
-        return loadPromise
+        return parts.value
     }
 
     function getPartById(id) {

@@ -1,9 +1,9 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, provide } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { resolveTopic } from '@/composables/useTopicResolver'
 import MyDropMenu from "@/components/MyDropMenu.vue";
-import { inject, provide } from "vue";
+import CustomButton from '@/components/UI/CustomButton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -48,6 +48,26 @@ function goBack() {
             </div>
 
             <p class="topic-view__description">{{ topic.description }}</p>
+
+            <div
+                v-if="topic.hrefToCourse || topic.hrefToDoc"
+                class="topic-view__links"
+            >
+                <CustomButton
+                    v-if="topic.hrefToCourse"
+                    :to="topic.hrefToCourse"
+                    title="Посмотреть на Stepik"
+                >
+                    Курс
+                </CustomButton>
+                <CustomButton
+                    v-if="topic.hrefToDoc"
+                    :to="topic.hrefToDoc"
+                    title="Посмотреть в официальной документации"
+                >
+                    Документация
+                </CustomButton>
+            </div>
         </article>
     </div>
 </template>
@@ -122,5 +142,13 @@ function goBack() {
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.85);
     white-space: pre-wrap;
+}
+
+.topic-view__links {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 </style>

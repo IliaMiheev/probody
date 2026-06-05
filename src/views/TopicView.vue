@@ -1,15 +1,19 @@
 <script setup>
-import { ref, watch, provide } from 'vue'
+import { ref, watch, provide, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { resolveTopic } from '@/composables/useTopicResolver'
 import MyDropMenu from "@/components/MyDropMenu.vue";
 import CustomButton from '@/components/UI/CustomButton.vue'
+
+const APP_LOGO = '/images/drone.png'
 
 const route = useRoute()
 const router = useRouter()
 const topic = ref(null)
 const dropMenu = ref(null);
 provide('dropMenu', dropMenu);
+
+const topicImage = computed(() => topic.value?.image || APP_LOGO)
 
 async function loadTopic() {
     topic.value = await resolveTopic(route.params.source, route.params.id)
@@ -39,12 +43,12 @@ function goBack() {
             </button>
 
             <div class="topic-view__image">
-                <img :src="topic.image" :alt="topic.title" />
+                <img :src="topicImage" :alt="topic.title" />
             </div>
 
             <div class="topic-view__header">
-                <p v-if="topic.subtitle" class="topic-view__subtitle">{{ topic.subtitle }}</p>
                 <h1 class="topic-view__title">{{ topic.title }}</h1>
+                <p v-if="topic.subtitle" class="topic-view__subtitle">{{ topic.subtitle }}</p>
             </div>
 
             <p class="topic-view__description">{{ topic.description }}</p>

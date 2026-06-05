@@ -1,6 +1,6 @@
 <template>
     <div class="navigation-wrapper">
-        <button class="burger-btn" @click="toggleMenu" :class="{ 'is-active': isOpen }" aria-label="Menu">
+        <button class="burger-btn" @click="toggleMenu" aria-label="Menu">
             <span class="line"></span>
             <span class="line"></span>
             <span class="line"></span>
@@ -156,10 +156,6 @@ h1 {
     background-color: transparent !important;
 }
 
-.menu-list-item.is-active {
-    background-color: transparent !important;
-    padding-bottom: 20px;
-}
 
 .menu-content button{
     font-size: 1.2rem;
@@ -170,18 +166,6 @@ h1 {
     height: 4px;
     background-color: #383838;
     transition: all 0.3s ease;
-}
-
-.is-active .line:nth-child(1) {
-    transform: translateY(6px) rotate(45deg);
-}
-
-.is-active .line:nth-child(2) {
-    opacity: 0;
-}
-
-.is-active .line:nth-child(3) {
-    transform: translateY(-6px) rotate(-45deg);
 }
 
 .side-panel {

@@ -55,20 +55,22 @@ const imageSrc = computed(() => props.image || APP_LOGO)
     align-items: center;
     gap: 15px;
     padding: 15px;
+    padding-left: 15px;
     margin: 8px 12px;
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, padding-left 0.25s ease;
     background: rgba(255, 255, 255, 0.05);
     box-sizing: border-box;
 }
 
 .list-card:hover {
-    background: rgba(35, 170, 227, 0.2);
+    background: rgb(31, 170, 230);
+    padding-left: 6px;
 }
 
 .list-card--active {
-    background: linear-gradient(135deg, #23aae3, #1a6d8f);
+    background:rgb(29, 149, 201);
     box-shadow: 0 4px 15px rgba(35, 170, 227, 0.3);
 }
 

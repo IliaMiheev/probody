@@ -1,10 +1,42 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit();
+}
+
+function isAppNavigation(url) {
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL && url.startsWith(MAIN_WINDOW_VITE_DEV_SERVER_URL)) {
+    return true;
+  }
+
+  return url.startsWith('file://');
+}
+
+function openExternalLink(url) {
+  shell.openExternal(url).catch((error) => {
+    console.error('Failed to open external link:', url, error);
+  });
+}
+
+function configureExternalLinks(mainWindow) {
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    openExternalLink(url);
+    return { action: 'deny' };
+  });
+
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    if (isAppNavigation(url)) {
+      return;
+    }
+
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      event.preventDefault();
+      openExternalLink(url);
+    }
+  });
 }
 
 const createWindow = () => {
@@ -22,6 +54,7 @@ const createWindow = () => {
   });
   mainWindow.setMenuBarVisibility(false);
   mainWindow.maximize();
+  configureExternalLinks(mainWindow);
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {

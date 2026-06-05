@@ -351,25 +351,33 @@ function onContextMenu(e, item) {
         <div class="actions">
             <n-tooltip trigger="hover">
                 <template #trigger>
-                    <Save @click="saveResult" />
+                    <span class="toolbar-item">
+                        <Save @click="saveResult" />
+                    </span>
                 </template>
                 Сохранить
             </n-tooltip>
             <n-tooltip trigger="hover">
                 <template #trigger>
-                    <Trash @click="cleanResult" />
+                    <span class="toolbar-item">
+                        <Trash @click="cleanResult" />
+                    </span>
                 </template>
                 Удалить
             </n-tooltip>
             <n-tooltip trigger="hover">
                 <template #trigger>
-                     <Back @click="cancel" />
+                    <span class="toolbar-item">
+                        <Back @click="cancel" />
+                    </span>
                 </template>
                 Отменить
             </n-tooltip>
             <n-tooltip trigger="hover">
                 <template #trigger>
-                    <Preview @click="openPreview" />
+                    <span class="toolbar-item">
+                        <Preview @click="openPreview" />
+                    </span>
                 </template>
                 Превью
             </n-tooltip>
@@ -458,6 +466,7 @@ function onContextMenu(e, item) {
     position: fixed;
     bottom: 10px;
     display: flex;
+    align-items: flex-end;
     gap: 10px;
     padding: 10px 20px;
     border-radius: 10px;
@@ -470,18 +479,33 @@ function onContextMenu(e, item) {
     border: 2px solid rgba(255, 255, 255, 0.18);
 }
 
-.actions svg {
-    width: var(--sizeActions);
-    height: var(--sizeActions);
-    transition: color 0.4s;
+.toolbar-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
-.actions svg:hover {
+.toolbar-item svg {
+    width: var(--sizeActions);
+    height: var(--sizeActions);
+    transition:
+        transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+        color 0.25s ease;
+    transform-origin: center bottom;
+    will-change: transform;
+}
+
+.toolbar-item:hover svg {
+    transform: scale(1.22) translateY(-6px);
     color: rgba(20, 104, 140, 0.89);
 }
 
-.actions svg:active {
-    transition: color 0s;
+.toolbar-item:active svg {
+    transition:
+        transform 0.12s ease,
+        color 0s;
+    transform: scale(1.08) translateY(-2px);
     color: #23aae3e2;
 }
 

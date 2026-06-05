@@ -384,11 +384,11 @@ function onContextMenu(e, item) {
                 <p v-else>Выстройте маршрут перед сохранением кода.</p>
             </main>
             <template #footer>
-                <div v-if="listOfTrips.length">
+                <template v-if="listOfTrips.length">
                     <button @click="openPreviewFromModal">Предпросмотр</button>
                     <button @click="handleDownloadBtn">Скачать код</button>
                     <button @click="copyAndToast(finallyText)">Скопировать код</button>
-                </div>
+                </template>
             </template>
         </MyDialog>
     </div>
@@ -396,7 +396,8 @@ function onContextMenu(e, item) {
 
 <style>
 :root {
-    --side: 75px;
+    --side: 8vh;
+    --sizeActions: 5vh;
 }
 
 .wraper {
@@ -409,36 +410,40 @@ function onContextMenu(e, item) {
     display: grid;
     padding: 3px;
     grid-template-columns: repeat(10, var(--side));
+    grid-template-rows: repeat(10, var(--side));
     gap: 5px;
     user-select: none;
 }
 
 .square {
-    width: var(--side);
-    height: var(--side);
+    width: 100%;
+    height: 100%;
+    text-align: center;
     background-size: cover;
-    border: 3px solid rgb(251, 251, 251);
+    border: 3px solid #ffffff;
     cursor: pointer;
     overflow-y: scroll;
 
     background-blend-mode: multiply;
-    background-color: transparent;
+    background-color: #ffffff;
     transition: background-color 0.3s ease;
 
-    color: white;
-    text-shadow: -1px -1px 0 black,
-        1px -1px 0 black,
-        -1px 1px 0 black,
-        1px 1px 0 black;
+    color: #2267fce2;
+    text-shadow: -1px -1px 0 #fff,
+    1px -1px 0 #fff,
+    -1px 1px 0 #fff,
+    1px 1px 0 #fff;
     box-sizing: border-box;
+    font-size: 1.1rem;
+    font-weight: bold
 }
 
 .square:hover {
-    background-color: rgb(166, 162, 162);
+    background-color: #949494;
 }
 
 .square:active {
-    background-color: rgb(164, 162, 162);
+    background-color: #747474;;
 }
 
 .square::-webkit-scrollbar {
@@ -466,8 +471,8 @@ function onContextMenu(e, item) {
 }
 
 .actions svg {
-    width: 40px;
-    height: 40px;
+    width: var(--sizeActions);
+    height: var(--sizeActions);
     transition: color 0.4s;
 }
 

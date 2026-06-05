@@ -89,6 +89,7 @@ useEventListener("keydown", handleKeydown);
 .modal-footer {
     padding: 10px;
     display: flex;
+    justify-content: flex-end;
 }
 
 .modal-header {

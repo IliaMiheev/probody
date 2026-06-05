@@ -9,6 +9,9 @@
 
 html {
     background-image: radial-gradient(#23aae3e2, #222222);
+    background-repeat: no-repeat;
+        background-attachment: fixed;
+
 }
 
 body {

@@ -41,7 +41,7 @@ def emergency_stop():
 
     """Функция экстренной остановки, срабатывает при нажатии Ctrl + C"""
 
-    print("\n" + "="*50)
+    print("="*50)
     print("EMERGENCY STOP ACTIVATED!")
     print("="*50)
     
@@ -81,7 +81,7 @@ def signal_handler(sig, frame):
     """Перехват Ctrl+C: вместо аварийного завершения программы 
     выполняет безопасную посадку дрона."""
 
-    print("\nCtrl+C detected - Emergency stop!")
+    print("Ctrl+C detected - Emergency stop!")
     emergency_stop()
     sys.exit(0)
 

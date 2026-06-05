@@ -1,67 +1,78 @@
 <template>
     <div class="navigation-wrapper">
-        <!-- Кнопка Бургер -->
         <button class="burger-btn" @click="toggleMenu" :class="{ 'is-active': isOpen }" aria-label="Menu">
             <span class="line"></span>
             <span class="line"></span>
             <span class="line"></span>
         </button>
 
-        <!-- Затемнение заднего фона (Overlay) -->
         <transition name="fade">
             <div v-if="isOpen" class="overlay" @click="closeMenu"></div>
         </transition>
 
-        <!-- Выпадающая панель -->
         <transition name="slide">
-            <aside v-if="isOpen" class="side-panel">
+            <aside v-show="isOpen" class="side-panel scroll-strip">
                 <div class="menu-header">
                     <h1>SkyVue</h1>
                 </div>
 
-                <nav class="menu-content">
-                    <custom-button
-                        @click="openInfoCard(item)"
-                        v-for="item in informationForDirectory"
+                <el-menu
+                    class="menu-content"
+                    background-color="transparent"
+                    text-color="#ffffff"
+                    active-text-color="#23aae3"
+                >
+                    <el-sub-menu
+                        v-for="group in menuGroups"
+                        :key="group.source"
+                        :index="group.source"
                     >
-                        {{ item.title }}
-                    </custom-button>
-                </nav>
+                        <template #title>
+                            <span class="menu-content__group-title">{{ group.name }}</span>
+                        </template>
+                        <el-menu-item
+                            v-for="item in group.items"
+                            :key="`${group.source}-${item.id}`"
+                            :index="`${group.source}-${item.id}`"
+                            class="menu-list-item"
+                            @click="openTopic(group.source, item.id)"
+                        >
+                            <ListCard
+                                :title="item.title"
+                                :subtitle="item.subtitle"
+                                :image="item.image"
+                                :active="isTopicActive(group.source, item.id)"
+                            />
+                        </el-menu-item>
+                    </el-sub-menu>
+                </el-menu>
             </aside>
         </transition>
-        <MyDialog isSuccess v-model:show="isModalVisible" @close="handleOkBtn">
-            <template #header>
-                <strong>{{ infoCard.title }}</strong>
-            </template>
-            <main>
-                <p>{{ infoCard.body }}</p>
-            </main>
-            <template #footer>
-                <div class="navigation-wrapper__footer">
-                    <custom-button :to="infoCard.hrefToCourse" title="Посмотреть на Stepik">Курс</custom-button>
-                    <custom-button :to="infoCard.hrefToDoc" title="Посмотреть в официальной документации">Документация
-                    </custom-button>
-                    <custom-button @click="handleOkBtn">ОК</custom-button>
-                </div>
-            </template>
-        </MyDialog>
     </div>
 </template>
 
 <script setup>
-import {ref} from 'vue';
-import MyDialog from "@/components/MyDialog.vue";
-import CustomButton from '@/components/UI/CustomButton.vue'
-import informationForDirectory from "../data/informationForDirectory";
-import {useEventListener} from "@vueuse/core";
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import ListCard from '@/components/UI/ListCard.vue'
+import { getMenuGroups } from '@/data/index.js'
+import { useEventListener } from "@vueuse/core";
+
+const route = useRoute()
+const router = useRouter()
 
 const isOpen = ref(false);
-const isModalVisible = ref(false);
-const infoCard = ref({})
+const menuGroups = ref([])
 
-function handleOkBtn() {
-    isModalVisible.value = false
-    isOpen.value = true
+function isTopicActive(source, id) {
+    return route.name === 'topic'
+        && route.params.source === source
+        && Number(route.params.id) === id
+}
+
+function openTopic(source, id) {
+    isOpen.value = false
+    router.push({ name: 'topic', params: { source, id } })
 }
 
 const toggleMenu = () => {
@@ -72,12 +83,6 @@ const closeMenu = () => {
     isOpen.value = false;
 };
 
-function openInfoCard(obj) {
-    isModalVisible.value = true
-    isOpen.value = false
-    infoCard.value = obj
-}
-
 const handleKeydown = (event) => {
     if (event.code === "Escape" && isOpen.value) {
         event.preventDefault();
@@ -86,8 +91,11 @@ const handleKeydown = (event) => {
 };
 useEventListener("keydown", handleKeydown);
 
-// Экспортируем методы, если захотим управлять меню извне
-defineExpose({open: () => (isOpen.value = true), close: closeMenu});
+onMounted(() => {
+    menuGroups.value = getMenuGroups()
+})
+
+defineExpose({ open: () => (isOpen.value = true), close: closeMenu });
 </script>
 
 <style scoped>
@@ -113,9 +121,43 @@ h1 {
 }
 
 .menu-content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    border-right: none;
+    padding-bottom: 30px;
+}
+
+.menu-content__group-title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.menu-content :deep(.el-sub-menu__title) {
+    border-radius: 10px;
+}
+
+.menu-content :deep(.el-sub-menu__title:hover) {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu-list-item {
+    height: auto;
+    line-height: normal;
+    padding: 0;
+    margin-bottom: 4px;
+    white-space: normal;
+}
+
+.menu-list-item :deep(.list-card) {
+    margin: 0;
+    width: 100%;
+}
+
+.menu-list-item:hover,
+.menu-content :deep(.el-menu-item.menu-list-item:hover) {
+    background-color: transparent !important;
+}
+
+.menu-list-item.is-active {
+    background-color: transparent !important;
     padding-bottom: 20px;
 }
 
@@ -127,11 +169,9 @@ h1 {
     width: 100%;
     height: 4px;
     background-color: #383838;
-    /* Ярко-красный цвет для теста */
     transition: all 0.3s ease;
 }
 
-/* Анимация бургера в крестик */
 .is-active .line:nth-child(1) {
     transform: translateY(6px) rotate(45deg);
 }
@@ -144,23 +184,20 @@ h1 {
     transform: translateY(-6px) rotate(-45deg);
 }
 
-/* Боковая панель */
 .side-panel {
     position: fixed;
     top: 0;
     left: 0;
     width: 25%;
+    min-width: 280px;
     height: 100%;
     background-image: radial-gradient(#23aae3e2, #222222);
     color: white;
     z-index: 2;
-    padding: 0 20px 20px;
-    overflow-y: scroll;
-    overflow: auto;
+    padding: 0 12px 20px;
     border-right: white 2px solid;
 }
 
-/* Затемнение фона */
 .overlay {
     position: fixed;
     top: 0;
@@ -173,17 +210,6 @@ h1 {
     display: flex;
 }
 
-main {
-    text-align: justify;
-}
-
-.navigation-wrapper__footer {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-}
-
-/* Анимации появления */
 .slide-enter-active,
 .slide-leave-active {
     transition: transform 0.39s ease;

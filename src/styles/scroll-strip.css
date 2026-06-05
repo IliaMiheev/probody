@@ -1,0 +1,30 @@
+/*
+ * Переиспользуемая скролл-лента.
+ * Подключение: import '@/styles/scroll-strip.css' (или через renderer.js).
+ * Использование: добавьте класс scroll-strip на прокручиваемый контейнер.
+ *
+ * Кастомизация через CSS-переменные на элементе или родителе:
+ *   --scroll-strip-width
+ *   --scroll-strip-track
+ *   --scroll-strip-thumb
+ *   --scroll-strip-radius
+ */
+.scroll-strip {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-strip-thumb, #23aae3) var(--scroll-strip-track, rgba(255, 255, 255, 0.1));
+}
+
+.scroll-strip::-webkit-scrollbar {
+  width: var(--scroll-strip-width, 6px);
+}
+
+.scroll-strip::-webkit-scrollbar-track {
+  background: var(--scroll-strip-track, rgba(255, 255, 255, 0.1));
+  border-radius: var(--scroll-strip-radius, 3px);
+}
+
+.scroll-strip::-webkit-scrollbar-thumb {
+  background: var(--scroll-strip-thumb, #23aae3);
+  border-radius: var(--scroll-strip-radius, 3px);
+}

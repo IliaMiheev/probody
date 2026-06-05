@@ -17,6 +17,10 @@
 </template>
 
 <style scoped>
-.cls-1{fill:none;}
-
+.cls-1{
+    fill:none;
+}
+#Layer_2 {
+    color: black;
+}
 </style>

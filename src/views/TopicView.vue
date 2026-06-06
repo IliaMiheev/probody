@@ -4,8 +4,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { resolveTopic } from '@/composables/useTopicResolver'
 import MyDropMenu from "@/components/MyDropMenu.vue";
 import CustomButton from '@/components/UI/CustomButton.vue'
+import { publicPath } from '@/shared/publicPath'
 
-const APP_LOGO = '/images/drone.png'
+const APP_LOGO = 'images/drone.png'
 
 const route = useRoute()
 const router = useRouter()
@@ -13,7 +14,7 @@ const topic = ref(null)
 const dropMenu = ref(null);
 provide('dropMenu', dropMenu);
 
-const topicImage = computed(() => topic.value?.image || APP_LOGO)
+const topicImage = computed(() => publicPath(topic.value?.image || APP_LOGO))
 
 async function loadTopic() {
     topic.value = await resolveTopic(route.params.source, route.params.id)

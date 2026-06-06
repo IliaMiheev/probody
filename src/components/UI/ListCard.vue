@@ -1,7 +1,8 @@
 <script setup>
 import { computed } from 'vue'
+import { publicPath } from '@/shared/publicPath'
 
-const APP_LOGO = '/images/drone.png'
+const APP_LOGO = 'images/drone.png'
 
 const props = defineProps({
     title: {
@@ -24,7 +25,7 @@ const props = defineProps({
 
 defineEmits(['click'])
 
-const imageSrc = computed(() => props.image || APP_LOGO)
+const imageSrc = computed(() => publicPath(props.image || APP_LOGO))
 </script>
 
 <template>

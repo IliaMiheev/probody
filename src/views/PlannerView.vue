@@ -17,6 +17,7 @@ import Back from "@/components/UI/svg/Back.vue";
 import { NTooltip } from 'naive-ui'
 import { useFlightCode } from '@/composables/useFlightCode'
 import { usePlannerState } from '@/composables/usePlannerState'
+import { publicPath } from '@/shared/publicPath'
 
 
 const router = useRouter()
@@ -256,7 +257,7 @@ function deletePointMap(item) {
 
 function createIcon(src) {
     return h('img', {
-        src: src,
+        src: publicPath(src),
         style: {
             width: '20px',
             height: '20px',
@@ -328,7 +329,7 @@ function onContextMenu(e, item) {
     <div class="wraper">
         <div class="grid">
             <div class="square" v-for="(item, index) in numbers" :data-key="index" :key="index" @click="setNumber(item)"
-                @contextmenu.prevent="onContextMenu($event, item)" :style="{ backgroundImage: `url(${item.BgImg})` }">
+                @contextmenu.prevent="onContextMenu($event, item)" :style="{ backgroundImage: `url(${publicPath(item.BgImg)})` }">
                 {{ numbers[index].variable.join(", ") }}
             </div>
         </div>

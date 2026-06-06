@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, h, inject, provide } from "vue";
+import { ref, h, inject, provide } from "vue";
 import { useRouter } from "vue-router";
 import izitoast from "@/shared/izitoast";
 import { useEventListener } from "@vueuse/core";
@@ -16,31 +16,16 @@ import Trash from "@/components/UI/svg/Trash.vue";
 import Back from "@/components/UI/svg/Back.vue";
 import { NTooltip } from 'naive-ui'
 import { useFlightCode } from '@/composables/useFlightCode'
+import { usePlannerState } from '@/composables/usePlannerState'
 
 
 const router = useRouter()
 const { finallyText } = useFlightCode()
+const { numbers, clickCount, listOfTrips } = usePlannerState()
 
-const numbers = ref([]);
-const clickCount = ref(1);
-const listOfTrips = ref([]);
 const isModalVisible = ref(false);
 const dropMenu = ref(null);
 provide('dropMenu', dropMenu);
-
-onMounted(() => {
-    for (let i = 0; i < 100; i++) {
-        numbers.value.push({
-            variable: [],
-            x: i % 10,
-            y: 9 - Math.floor(i / 10),
-            index: i,
-            isPlatform: false,
-            isQR: false,
-            BgImg: 'images/ArUco-marker.jpg'
-        });
-    }
-});
 
 function setNumber(item) {
     let valueOfMarker = item.variable[0];
